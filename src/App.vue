@@ -1,15 +1,34 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import {
+    NConfigProvider,
+    NDialogProvider,
+    NDivider,
+    NLoadingBarProvider,
+    NMessageProvider,
+    NNotificationProvider
+} from "naive-ui";
 </script>
 
 <template>
-    <div class="w-full h-max">
-        <RouterView />
-    </div>
+    <NLoadingBarProvider>
+        <NNotificationProvider>
+            <div>
+                <NMessageProvider>
+                    <NDialogProvider>
+                        <NConfigProvider>
+                            <div class="w-full relative">
+                                <div class="justify-center items-center">
+                                    <RouterView />
+                                </div>
+                            </div>
+                        </NConfigProvider>
+                    </NDialogProvider>
+                </NMessageProvider>
+            </div>
+        </NNotificationProvider>
+    </NLoadingBarProvider>
 </template>
 
 <style scoped>
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 </style>
