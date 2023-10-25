@@ -38,11 +38,12 @@ const descriptionCards = [
         <NLayout class="w-full items-center align-middle flex">
             <NLayout>
                 <NLayoutContent class="w-screen">
-                    <NCarousel :direction="'horizontal'" :dot-type="'line'" show-dots autoplay>
+                    <NCarousel :direction="'horizontal'" class="w-screen" :dot-type="'line'" show-dots autoplay>
                         <img src="@/assets/images/bg1.png" class="object-cover w-full"/>
                         <img src="@/assets/images/bg2.png" class="object-cover w-full"/>
                         <img src="@/assets/images/bg3.png" class="object-cover w-full"/>
                         <img src="@/assets/images/bg4.png" class="object-cover w-full"/>
+                        <img src="@/assets/images/bg5.png" class="object-cover w-full"/>
                     </NCarousel>
                     <div class="absolute inset-0 flex flex-col items-center justify-center align-middle">
                         <div class="flex flex-col items-center justify-center align-middle">

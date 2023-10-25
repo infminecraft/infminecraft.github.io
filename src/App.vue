@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import {RouterLink, RouterView, useRouter} from 'vue-router'
 import {
     darkTheme, NAffix,
     NConfigProvider,
@@ -16,25 +16,58 @@ import type {Component} from "vue";
 function renderIcon (icon: Component) {
     return () => h(NIcon, null, { default: () => h(icon) })
 }
+const $router = useRouter()
 
 const headerMenuOptions: MenuOption[] = [
     {
-        label: 'Home 主页',
+        label: () => h(
+            RouterLink,
+            {
+                to: {
+                    name: 'landing'
+                }
+            },
+            { default: () => 'Home 主页' }
+        ),
         key: 'landing',
         icon: renderIcon(Home)
     },
     {
-        label: 'Server Rules 服务器规则',
+        label: () => h(
+            RouterLink,
+            {
+                to: {
+                    name: 'docs'
+                }
+            },
+            { default: () => 'Documentation 服务器文档' }
+        ),
         key: 'rules',
         icon: renderIcon(Newspaper)
     },
     {
-        label: 'Donate 捐赠',
+        label: () => h(
+            RouterLink,
+            {
+                to: {
+                    name: 'donate'
+                }
+            },
+            { default: () => 'Donate 捐赠' }
+        ),
         key: 'donate',
         icon: renderIcon(HeartCircleOutline)
     },
     {
-        label: 'Penalty Records 惩罚记录',
+        label: () => h(
+            RouterLink,
+            {
+                to: {
+                    name: 'penalties'
+                }
+            },
+            { default: () => 'Penalty Records 惩罚记录' }
+        ),
         key: 'penalties',
         icon: renderIcon(AlertCircle)
     }
@@ -51,20 +84,20 @@ const activeKey = ref("landing");
                     <NDialogProvider>
                         <NConfigProvider :theme="darkTheme">
                             <div class="w-full relative">
-                                <NLayout class="justify-center items-center">
-                                    <NLayoutHeader>
+                                <div class="justify-center items-center">
+                                    <div>
                                         <NAffix :listen-to="() => containerRef" :trigger-top="0" :top="0" class="w-screen z-10">
                                             <div class="w-full flex backdrop-blur-lg bg-transparent items-center justify-center p-1">
                                                 <NMenu
-                                                    v-model:value="activeKey" mode="horizontal" :options="headerMenuOptions" default-value="landing"
+                                                    v-model:value="activeKey" mode="horizontal" :options="headerMenuOptions"
                                                 />
                                             </div>
                                         </NAffix>
-                                    </NLayoutHeader>
-                                    <NLayout>
+                                    </div>
+                                    <div>
                                         <RouterView />
-                                    </NLayout>
-                                </NLayout>
+                                    </div>
+                                </div>
                             </div>
                         </NConfigProvider>
                     </NDialogProvider>

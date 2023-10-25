@@ -11,8 +11,8 @@ const router = createRouter({
       component: LandingView
     },
     {
-      path: '/rules',
-      name: 'rules',
+      path: '/docs',
+      name: 'docs',
       component: DocumentationView
     },
     {
