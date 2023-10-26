@@ -4,10 +4,10 @@ import {
     darkTheme, NAffix,
     NConfigProvider,
     NDialogProvider,
-    NDivider, NIcon, NLayoutHeader,
+    NDivider, NGradientText, NIcon, NLayoutFooter, NLayoutHeader,
     NLoadingBarProvider, NMenu,
     NMessageProvider,
-    NNotificationProvider
+    NNotificationProvider, NText
 } from "naive-ui";
 import type {MenuOption} from "naive-ui";
 import {Home, Newspaper, HeartCircleOutline, AlertCircle} from "@vicons/ionicons5";
@@ -84,9 +84,9 @@ const activeKey = ref("landing");
                     <NDialogProvider>
                         <NConfigProvider :theme="darkTheme">
                             <div class="w-full relative">
-                                <div class="justify-center items-center">
+                                <div class="w-full justify-center items-center">
                                     <div>
-                                        <NAffix :listen-to="() => containerRef" :trigger-top="0" :top="0" class="w-screen z-10">
+                                        <NAffix :listen-to="() => containerRef" :trigger-top="0" :top="0" class="w-full z-10">
                                             <div class="w-full flex backdrop-blur-lg bg-transparent items-center justify-center p-1">
                                                 <NMenu
                                                     v-model:value="activeKey" mode="horizontal" :options="headerMenuOptions"
@@ -94,7 +94,7 @@ const activeKey = ref("landing");
                                             </div>
                                         </NAffix>
                                     </div>
-                                    <div>
+                                    <div class="w-full">
                                         <RouterView />
                                     </div>
                                 </div>

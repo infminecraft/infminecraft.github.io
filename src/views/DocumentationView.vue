@@ -16,6 +16,7 @@ import {onMounted, onUnmounted, ref} from "vue"
 import {Home} from "@vicons/ionicons5";
 import RuleOneComponent from "@/assets/docs/views/rules/Rule1.vue";
 import RuleTwoComponent from "@/assets/docs/views/rules/Rule2.vue";
+import Copyrighter from "@/components/Copyrighter.vue";
 
 const sidebarOptions : MenuOption[] = [
     {
@@ -45,6 +46,7 @@ const containerRef = ref<HTMLElement | undefined>(undefined);
                             <RuleTwoComponent id="r2"/>
                         </div>
                     </NLayoutContent>
+                    <Copyrighter/>
                 </NScrollbar>
                 <NLayoutSider sider-placement="right">
                     <div class="w-fit h-fit p-3">

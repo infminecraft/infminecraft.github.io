@@ -4,12 +4,13 @@ import {
     NCarousel, NDivider,
     NGradientText, NGrid, NGridItem,
     NLayout,
-    NLayoutContent,
+    NLayoutContent, NScrollbar,
     NText
 } from "naive-ui";
 import bg1 from "@/assets/images/bg1.png"
 import bg3 from "@/assets/images/bg3.png"
 import bg4 from "@/assets/images/bg4.png"
+import Copyrighter from "@/components/Copyrighter.vue";
 
 const descriptionCards = [
     {
@@ -36,9 +37,9 @@ const descriptionCards = [
 <template>
     <div>
         <NLayout class="w-full items-center align-middle flex">
-            <NLayout>
-                <NLayoutContent class="w-screen">
-                    <NCarousel :direction="'horizontal'" class="w-screen" :dot-type="'line'" show-dots autoplay>
+            <NLayout class="w-fit flex">
+                <NLayoutContent class="w-full">
+                    <NCarousel :direction="'horizontal'" class="w-full" :dot-type="'line'" show-dots autoplay>
                         <img src="@/assets/images/bg1.png" class="object-cover w-full"/>
                         <img src="@/assets/images/bg2.png" class="object-cover w-full"/>
                         <img src="@/assets/images/bg3.png" class="object-cover w-full"/>
@@ -59,8 +60,8 @@ const descriptionCards = [
                     </div>
 
                 </NLayoutContent>
-                <NLayout class="p-10">
-                    <NGrid class="w-screen flex items-center justify-center" :x-gap="20" :cols="3">
+                <NLayout class="p-10 w-fit">
+                    <NGrid class="w-fit flex items-center justify-center" :x-gap="20" :cols="3">
                         <NGridItem v-for="desc in descriptionCards" class="flex h-full w-full">
                             <NCard size="large" class="w-full h-full flex" :title="desc.title" hoverable>
                                 <template #cover>
@@ -73,6 +74,7 @@ const descriptionCards = [
                         </NGridItem>
                     </NGrid>
                 </NLayout>
+                <Copyrighter/>
             </NLayout>
         </NLayout>
     </div>
