@@ -9,19 +9,25 @@ import {
     NLayoutSider, NList, NListItem,
     NMenu, NScrollbar,
     NText,
-    NAlert
+    NAlert,
+    NIcon
 } from "naive-ui";
 import type {MenuOption} from "naive-ui";
-import {onMounted, onUnmounted, ref} from "vue"
-import {Home} from "@vicons/ionicons5";
+import {onMounted, onUnmounted, ref, h} from "vue"
 import RuleOneComponent from "@/assets/docs/views/rules/Rule1.vue";
 import RuleTwoComponent from "@/assets/docs/views/rules/Rule2.vue";
 import Copyrighter from "@/components/Copyrighter.vue";
+import {Home, Newspaper, HeartCircleOutline, AlertCircle} from "@vicons/ionicons5"
+import type {Component} from "vue";
+function renderIcon (icon: Component) {
+    return () => h(NIcon, null, { default: () => h(icon) })
+}
 
 const sidebarOptions : MenuOption[] = [
     {
         label: 'Server Rules 服务器规则',
-        key: 'server-rules'
+        key: 'server-rules',
+        icon: renderIcon(Newspaper)
     }
 ]
 const activeKey = ref("")
@@ -35,8 +41,8 @@ const containerRef = ref<HTMLElement | undefined>(undefined);
 <!--                <img src="@/assets/images/bg5.png" alt="Header" class="object-cover w-full"/>-->
 <!--            </NLayoutHeader>-->
             <NLayout has-sider class="h-screen w-full pt-14">
-                <NLayoutSider sider-placement="left" show-trigger="bar">
-                    <NMenu v-model:value="activeKey" :options="sidebarOptions" vertical default-value="server-rules"/>
+                <NLayoutSider bordered collapse-mode="width" sider-placement="left" show-trigger="bar">
+                    <NMenu v-model:value="activeKey" :options="sidebarOptions" default-value="server-rules"/>
                 </NLayoutSider>
                 <NScrollbar>
                     <NLayoutContent class="w-fit">

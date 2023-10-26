@@ -47,13 +47,13 @@ const headerMenuOptions: MenuOption[] = [
     },
     {
         label: () => h(
-            RouterLink,
+            'a',
             {
-                to: {
-                    name: 'donate'
-                }
+                href: "http://afdian.net/a/infminecraft2585",
+                target: '_blank',
+                rel: 'noopenner noreferrer'
             },
-            { default: () => 'Donate 捐赠' }
+            'Donate 捐赠'
         ),
         key: 'donate',
         icon: renderIcon(HeartCircleOutline)

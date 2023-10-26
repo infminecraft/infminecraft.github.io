@@ -8,21 +8,14 @@ declare module '*.md' {
     const value: any;
     export default value;
 }
+declare module '*.vue' {
+    const value: any;
+    export default value;
+}
 
 declare module 'vue' {
     export interface GlobalComponents {
         RouterLink: typeof import('vue-router')['RouterLink']
         RouterView: typeof import('vue-router')['RouterView']
     }
-}
-declare module "*.vue" {
-    import { ComponentOptions } from "vue";
-    const Component: ComponentOptions;
-    export default Component;
-}
-
-declare module "*.md" {
-    import { ComponentOptions } from "vue";
-    const Component: ComponentOptions;
-    export default Component;
 }
