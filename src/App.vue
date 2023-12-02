@@ -70,6 +70,19 @@ const headerMenuOptions: MenuOption[] = [
         ),
         key: 'penalties',
         icon: renderIcon(AlertCircle)
+    },
+    {
+        label: () => h(
+            RouterLink,
+            {
+                to: {
+                    name: 'posts'
+                }
+            },
+            { default: () => 'Posts 公告' }
+        ),
+        key: 'posts',
+        icon: renderIcon(AlertCircle)
     }
 ]
 const containerRef = ref<HTMLElement | undefined>(undefined);
