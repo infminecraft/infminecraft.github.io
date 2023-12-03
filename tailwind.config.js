@@ -10,6 +10,9 @@ module.exports = {
   plugins: [],
   corePlugins: {
     preflight: false
+  },
+  experimental: {
+    backgroundClipText: true
   }
 }
 
