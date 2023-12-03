@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import {NH1, NH2, NList, NListItem, NText, NAlert} from "naive-ui";
+// @ts-ignore
 import OnePointOne from "@/assets/docs/mds/rules/1/1.1.md";
+// @ts-ignore
 import OnePointTwo from "@/assets/docs/mds/rules/1/1.2.md";
+// @ts-ignore
 import OnePointThree from "@/assets/docs/mds/rules/1/1.3.md";
+// @ts-ignore
 import OnePointFour from "@/assets/docs/mds/rules/1/1.4.md";
 </script>
 
