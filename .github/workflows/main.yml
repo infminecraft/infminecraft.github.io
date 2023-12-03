@@ -1,0 +1,22 @@
+            - name: Deploy Vue.js App to Github Pages
+  # You may pin to the exact commit or the version.
+  # uses: SerhiiKa/VuePagesAction@db267d0bd5edbdaf51b5a16130f061b10d165a7c
+  uses: SerhiiKa/VuePagesAction@1.0.4
+  with:
+    # Your username
+    username: infminecraft
+    # Your reponame
+    reponame: infminecraft.github.io
+    # Your Github token
+    token: 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
+    # Your git commit email
+    gitemail: infinitum_studios@outlook.com
+    # Your git commit name
+    gitname: # optional, default is CI
+    # Your git commit message
+    gitmsg: # optional, default is deploy
+    # Your custom domain
+    cname: # optional, default is none
+    # Use yarn to build
+    useyarn: # optional
+          
