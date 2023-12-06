@@ -100,10 +100,14 @@ const activeKey = ref("landing");
                                 <div class="w-full justify-center items-center">
                                     <div>
                                         <NAffix :listen-to="() => containerRef" :trigger-top="0" :top="0" class="w-full z-10">
-                                            <div class="w-full flex backdrop-blur-lg bg-transparent items-center justify-center p-1">
-                                                <NMenu
-                                                    v-model:value="activeKey" mode="horizontal" :options="headerMenuOptions"
-                                                />
+                                            <div class="flex items-center justify-center">
+                                                <div class="rounded-2xl p-1 px-2 mt-3 backdrop-blur-md bg-transparent border-0 ring-[0.5px] ring-slate-600">
+                                                    <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-zinc-50 to-zinc-100 opacity-10 mix-blend-multiply rounded-2xl"/>
+                                                    <NMenu
+                                                        v-model:value="activeKey" mode="horizontal" :options="headerMenuOptions"
+                                                        class="w-fit relative z-10"
+                                                    />
+                                                </div>
                                             </div>
                                         </NAffix>
                                     </div>

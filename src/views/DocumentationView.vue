@@ -17,7 +17,7 @@ import {onMounted, onUnmounted, ref, h} from "vue"
 import RuleOneComponent from "@/assets/docs/views/rules/Rule1.vue";
 import RuleTwoComponent from "@/assets/docs/views/rules/Rule2.vue";
 import Copyrighter from "@/components/Copyrighter.vue";
-import {Home, Newspaper, HeartCircleOutline, AlertCircle} from "@vicons/ionicons5"
+import {Home, Newspaper, HeartCircleOutline, AlertCircle, Apps} from "@vicons/ionicons5"
 import type {Component} from "vue";
 function renderIcon (icon: Component) {
     return () => h(NIcon, null, { default: () => h(icon) })
@@ -28,9 +28,14 @@ const sidebarOptions : MenuOption[] = [
         label: 'Server Rules 服务器规则',
         key: 'server-rules',
         icon: renderIcon(Newspaper)
+    },
+    {
+        label: 'Launcher Manuals 启动器使用指南',
+        key: 'launcher-manuals',
+        icon: renderIcon(Apps)
     }
 ]
-const activeKey = ref("")
+const activeKey = ref("server-rules")
 const containerRef = ref<HTMLElement | undefined>(undefined);
 </script>
 
@@ -40,7 +45,7 @@ const containerRef = ref<HTMLElement | undefined>(undefined);
 <!--            <NLayoutHeader class="w-full h-full">-->
 <!--                <img src="@/assets/images/bg5.png" alt="Header" class="object-cover w-full"/>-->
 <!--            </NLayoutHeader>-->
-            <NLayout has-sider class="h-screen w-full pt-14">
+            <NLayout has-sider class="h-screen w-full pt-16">
                 <NLayoutSider bordered collapse-mode="width" sider-placement="left" show-trigger="bar">
                     <NMenu v-model:value="activeKey" :options="sidebarOptions" default-value="server-rules"/>
                 </NLayoutSider>
@@ -48,15 +53,20 @@ const containerRef = ref<HTMLElement | undefined>(undefined);
                     <NLayoutContent class="w-fit">
                         <img src="@/assets/images/docsHeader.png" alt="Header" class="object-cover w-full"/>
                         <div class="w-fit h-full p-10">
-                            <RuleOneComponent id="r1"/>
-                            <RuleTwoComponent id="r2"/>
+                            <div v-if="activeKey == 'server-rules'">
+                                <RuleOneComponent id="r1"/>
+                                <RuleTwoComponent id="r2"/>
+                            </div>
+                            <div>
+
+                            </div>
                         </div>
                     </NLayoutContent>
                     <Copyrighter/>
                 </NScrollbar>
                 <NLayoutSider sider-placement="right">
                     <div class="w-fit h-fit p-3">
-                        <NAnchor :show-rail="true" :show-background="true" class="w-fit">
+                        <NAnchor :show-rail="true" :show-background="true" class="w-fit" v-if="activeKey == 'server-rules'">
                             <NAnchorLink title="Rule 1 规则一" href="#r1">
                                 <NAnchorLink title="1.1" href="#r1.1"/>
                                 <NAnchorLink title="1.2" href="#r1.2"/>

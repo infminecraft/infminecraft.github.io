@@ -11,6 +11,7 @@ import bg1 from "@/assets/images/bg1.png"
 import bg3 from "@/assets/images/bg3.png"
 import bg4 from "@/assets/images/bg4.png"
 import Copyrighter from "@/components/Copyrighter.vue";
+import {RouterLink} from "vue-router";
 
 const descriptionCards = [
     {
@@ -32,6 +33,10 @@ const descriptionCards = [
         imageSource: bg4
     }
 ]
+
+function toGetStarted(){
+    window.open("https://docs.qq.com/form/page/DR2lMVGtlT3NKc1F4")
+}
 </script>
 
 <template>
@@ -49,12 +54,12 @@ const descriptionCards = [
                     <div class="absolute inset-0 flex flex-col items-center justify-center align-middle">
                         <div class="flex flex-col items-center justify-center align-middle">
                             <div class="flex">
-                                <NGradientText class="text-6xl font-bold text-center bg-gradient-to-r from-green-100 to-green-200">InfMinecraft</NGradientText>
-                                <NGradientText class="text-6xl font-bold text-center bg-gradient-to-r from-green-200 to-green-400"> 我的世界服务器</NGradientText>
+                                <NGradientText class="text-6xl font-bold text-center bg-gradient-to-r from-green-100 to-green-200 opacity-90">InfMinecraft</NGradientText>
+                                <NGradientText class="text-6xl font-bold text-center bg-gradient-to-r from-green-200 to-green-400 opacity-90"> 我的世界服务器</NGradientText>
                             </div>
                             <div class="mt-5 flex gap-5">
-                                <NButton type="primary" strong size="large">Get Started 加入服务器</NButton>
-                                <NButton type="primary" strong secondary size="large">Learn More 更多信息</NButton>
+                                <NButton type="primary" strong size="large" @click="toGetStarted()">Get Started 加入服务器</NButton>
+                                <NButton type="primary" strong secondary size="large" @click="$router.push('docs')">Learn More 更多信息</NButton>
                             </div>
                         </div>
                     </div>
