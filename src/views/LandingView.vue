@@ -54,8 +54,7 @@ function toGetStarted(){
                     <div class="absolute inset-0 flex flex-col items-center justify-center align-middle">
                         <div class="flex flex-col items-center justify-center align-middle">
                             <div class="flex">
-                                <NGradientText class="text-6xl font-bold text-center bg-gradient-to-r from-green-100 to-green-200 opacity-90">InfMinecraft</NGradientText>
-                                <NGradientText class="text-6xl font-bold text-center bg-gradient-to-r from-green-200 to-green-400 opacity-90"> 我的世界服务器</NGradientText>
+                                <NGradientText class="text-6xl font-bold text-center bg-gradient-to-r from-green-100 to-green-400 opacity-90">InfMinecraft 我的世界服务器</NGradientText>
                             </div>
                             <div class="mt-5 flex gap-5">
                                 <NButton type="primary" strong size="large" @click="toGetStarted()">Get Started 加入服务器</NButton>

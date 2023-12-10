@@ -12,7 +12,7 @@ import {
     NTabs,
     useMessage
 } from "naive-ui";
-import {signOut, signInWithOtp, isValidEmail} from '@/scripts/authentication/auth'
+import {signOut, isValidEmail} from '@/scripts/authentication/auth'
 import type {FormInst} from "naive-ui/lib";
 import {supabase} from "@/scripts/client";
 import {RouterLink, RouterView, useRouter} from "vue-router";
@@ -31,7 +31,9 @@ async function tryOtpLogin(){
         return
     }
     try {
-        const { error } = await signInWithOtp(emailInput.value)
+        const { error } = await supabase.auth.signInWithOtp({
+            email: emailInput.value
+        })
         if (error) throw error
         message.success("Check your email for the login link.")
     } catch (error) {
@@ -61,7 +63,7 @@ async function tryOtpLogin(){
                     </NTabPane>
                 </NTabs>
                 <div v-else>
-                    <NGradientText>We've sent you an email. You should be able to log in with this link.</NGradientText>
+                    <NGradientText :font-size="16">We've sent you an email. You should be able to log in with this link.</NGradientText>
                 </div>
             </NCard>
             <NButton @click="$router.push('/')" class="justify-self-center w-full mt-5" text>Back to Menu</NButton>

@@ -6,6 +6,8 @@ import LoginView from "@/views/auth/LoginView.vue";
 import {supabase} from "@/scripts/client";
 import DashboardView from "@/views/DashboardView.vue";
 import NotFound404 from "@/views/NotFound404.vue";
+// @ts-ignore
+import {useAuthStore} from "@/scripts/authentication/store";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,7 +35,15 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: LoginView
+      component: LoginView,
+      beforeEnter: (to, from, next) => {
+        const { state } = useAuthStore();
+        if (state.session) {
+          next({ name: 'dashboard' }); // Redirect to dashboard if already logged in
+        } else {
+          next(); // Allow route if not logged in
+        }
+      },
     },
     {
       path: '/dashboard',
@@ -47,5 +57,17 @@ const router = createRouter({
     }
   ]
 })
+
+router.beforeEach(async (to, from, next) => {
+  const { state } = useAuthStore();
+
+  // Assuming 'dashboard' route requires authentication
+  if (to.name === 'dashboard' && !state.session) {
+    // Redirect user to login page
+    return next({ name: 'login' });
+  }
+
+  next(); // proceed to route
+});
 
 export default router
