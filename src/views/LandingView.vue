@@ -66,7 +66,7 @@ function toGetStarted(){
 
                 </NLayoutContent>
                 <NLayout class="p-10 w-fit">
-                    <NGrid class="w-fit flex items-center justify-center" :x-gap="20" :cols="3">
+                    <NGrid class="w-fit flex items-center justify-center" :x-gap="20" :y-gap="20" cols="3 100:1 600:2 1000:3">
                         <NGridItem v-for="desc in descriptionCards" class="flex h-full w-full">
                             <NCard size="large" class="w-full h-full flex" :title="desc.title" hoverable>
                                 <template #cover>

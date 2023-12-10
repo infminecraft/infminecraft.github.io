@@ -9,6 +9,8 @@ declare module 'vue' {
   export interface GlobalComponents {
     Copyrighter: typeof import('./src/components/Copyrighter.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
+    NCard: typeof import('naive-ui')['NCard']
+    NSpin: typeof import('naive-ui')['NSpin']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
