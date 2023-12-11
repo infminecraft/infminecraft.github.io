@@ -2,8 +2,9 @@
 import { supabase } from '@/scripts/client'
 import {type Component, h, onMounted, ref, toRefs} from 'vue'
 import {
+    NCard,
     NDivider,
-    NGradientText,
+    NGradientText, NGrid,
     NIcon,
     NLayout,
     NLayoutContent,
@@ -14,7 +15,7 @@ import {
     useMessage
 } from "naive-ui";
 import {RouterLink} from "vue-router";
-import {Home} from "@vicons/ionicons5";
+import {Home, PencilSharp, PersonCircle, } from "@vicons/ionicons5";
 import {useSession} from "@/scripts/authentication/auth";
 import {useAuthStore} from "@/scripts/authentication/store";
 import ContentLoader from "@/views/components/ContentLoader.vue";
@@ -39,10 +40,21 @@ const sidebarMenu = [
     {
         key: 'divider-1',
         type: 'divider'
+    },
+    {
+        label: 'Posts 帖子',
+        key: 'posts',
+        icon: renderIcon()
+    },
+    {
+        label: 'Users 用户',
+        key: 'users',
+        icon: renderIcon(PersonCircle)
     }
 ]
 
 const username = ref('')
+const users = ref(), userCount = ref()
 const website = ref('')
 const avatar_url = ref('')
 const userPosts = ref<Post[]>([]); // Replace with the appropriate type for your posts
@@ -51,7 +63,22 @@ const loadingPosts = ref(false);
 onMounted(async () => {
     await getProfile()
     await fetchUserPosts()
+    users.value = await getUsers()
+    userCount.value = users.value?.length;
 })
+
+async function getUsers() {
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('id')
+
+    if (data) {
+        // message.info('Number of authenticated users: ' + data.length)
+    } else {
+        message.error('Error fetching users: ' + error?.message)
+    }
+    return data;
+}
 
 async function getProfile() {
     if (!state.session) {
@@ -106,7 +133,7 @@ async function fetchUserPosts() {
         if (error instanceof Error) {
             message.error(error.message);
         } else {
-            message.error("An error occurred while fetching posts.");
+            message.error("An error occurred while fetching posts. Please refresh the page and try again.");
         }
     } finally {
         loading.value = false;
@@ -174,6 +201,34 @@ async function signOut() {
                         <div class="font-bold text-4xl">Hello, {{username}}</div>
                         <div class="text-zinc-500 mt-3">Did you have a good day today?</div>
                         <NDivider/>
+                        <div class="w-full flex flex-row gap-5">
+                            <NCard class="flex-grow cursor-pointer" hoverable @click="activeKey='posts'">
+                                <div class="flex gap-5">
+                                    <div class="bg-black/30 rounded-lg outline-1 p-2">
+                                        <NIcon size="40" class="w-full h-full flex justify-center">
+                                            <PencilSharp/>
+                                        </NIcon>
+                                    </div>
+                                    <div class="flex-grow">
+                                        <div class="text-zinc-500">Posts</div>
+                                        <div class="font-bold text-2xl">{{userPosts.length}}</div>
+                                    </div>
+                                </div>
+                            </NCard>
+                            <NCard class="flex-grow cursor-pointer" hoverable @click="activeKey='visits'">
+                                <div class="flex gap-5">
+                                    <div class="bg-black/30 rounded-lg outline-1 p-2">
+                                        <NIcon size="40" class="w-full h-full flex justify-center">
+                                            <PencilSharp/>
+                                        </NIcon>
+                                    </div>
+                                    <div class="flex-grow">
+                                        <div class="text-zinc-500">Visits</div>
+                                        <div class="font-bold text-2xl">{{userCount}}</div>
+                                    </div>
+                                </div>
+                            </NCard>
+                        </div>
                     </div>
                 </NLayoutContent>
             </NLayout>
