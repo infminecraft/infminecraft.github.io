@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
+    "axios": "^1.6.2",
     "supabase": "^1.115.5",
     "unplugin-vue-markdown": "^0.24.3",
     "vue": "^3.3.4",
