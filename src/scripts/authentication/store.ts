@@ -11,6 +11,12 @@ const state = reactive<AuthState>({
     session: null
 })
 
+/**
+ * Returns an object containing the state of the authentication session,
+ * and functions to check and update the session.
+ *
+ * @returns {Object} The object containing the state and the functions.
+ */
 export function useAuthStore() {
     async function checkSession() {
         const { data } = await supabase.auth.getSession()

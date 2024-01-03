@@ -11,6 +11,7 @@ declare module 'vue' {
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']
     NGradientText: typeof import('naive-ui')['NGradientText']
+    NInput: typeof import('naive-ui')['NInput']
     NLayout: typeof import('naive-ui')['NLayout']
     NSpin: typeof import('naive-ui')['NSpin']
     RouterLink: typeof import('vue-router')['RouterLink']

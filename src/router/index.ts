@@ -8,6 +8,8 @@ import DashboardView from "@/views/DashboardView.vue";
 import NotFound404 from "@/views/NotFound404.vue";
 // @ts-ignore
 import {useAuthStore} from "@/scripts/authentication/store";
+import PostsDashboardView from "@/views/dashboards/PostsDashboardView.vue";
+import MainBoardView from "@/views/dashboards/MainBoardView.vue"
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,7 +50,21 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: DashboardView
+      component: DashboardView,
+      children: [
+        {
+          path: '',
+          name: 'mainboard',
+          component: MainBoardView,
+          props: true
+        },
+        {
+          path: 'posts',
+          name: 'posts',
+          component: PostsDashboardView,
+          props: true
+        }
+      ]
     },
     {
       path: '/:pathMatch(.*)*',

@@ -12,6 +12,8 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
     "axios": "^1.6.2",
+    "md-editor-v3": "^4.10.0",
+    "pinia": "^2.1.7",
     "supabase": "^1.115.5",
     "unplugin-vue-markdown": "^0.24.3",
     "vue": "^3.3.4",
