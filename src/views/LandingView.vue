@@ -78,6 +78,9 @@ function toGetStarted(){
                         </NGridItem>
                     </NGrid>
                 </NLayout>
+                <NLayout class="p-10 w-fit">
+
+                </NLayout>
                 <Copyrighter/>
             </NLayout>
         </NLayout>
