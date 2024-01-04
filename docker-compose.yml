@@ -1,0 +1,13 @@
+version: '3'
+services:
+  app:
+    image: node:16
+    volumes:
+      - app-data:/app
+    working_dir: /app
+    command: bash -c "npm install && npm run dev -- --host"
+    ports:
+      - "${STACK_PORT}:5000"
+
+volumes:
+  app-data:

@@ -58,7 +58,7 @@ function formatDateToMMMddYYYY(isoTimestamp: string): string {
                 <NButton text @click="$router.push('/')"><NIcon class="mr-2"><ArrowBack/></NIcon> Back to Menu</NButton>
             </div>
         </NLayoutHeader>
-        <NLayoutContent class="p-6">
+        <NLayoutContent class="p-10">
             <div v-if="post">
                 <div class="text-5xl font-bold mb-3">{{ post.title }}</div>
                 <div class="flex text-zinc-500">

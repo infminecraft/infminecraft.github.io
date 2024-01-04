@@ -96,6 +96,10 @@ const router = createRouter({
       path: '/:pathMatch(.*)*',
       name: '404',
       component: NotFound404
+    },
+    {
+      path: '/post/404',
+      component: NotFound404
     }
   ]
 })
