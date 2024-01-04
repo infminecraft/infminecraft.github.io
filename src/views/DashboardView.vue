@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { supabase } from '@/scripts/client'
-import {type Component, h, onMounted, ref, toRefs} from 'vue'
+import {type Component, h, onMounted, ref, toRefs, toRef} from 'vue'
 import {
     NCard,
     NDivider,
@@ -15,7 +15,7 @@ import {
     useMessage
 } from "naive-ui";
 import axios from 'axios'
-import {RouterLink, useRouter} from "vue-router";
+import {RouterLink, useRouter, useRoute} from "vue-router";
 import {Home, PencilSharp, PersonCircle, NewspaperOutline, GitMerge, GitPullRequest } from "@vicons/ionicons5";
 import {useSession} from "@/scripts/authentication/auth";
 import {useAuthStore} from "@/scripts/authentication/store";
@@ -27,10 +27,9 @@ import Copyrighter from "@/components/Copyrighter.vue";
 import {useDataFetcher} from "@/scripts/utility/dashboard/fetch";
 import MainBoardView from "@/views/dashboards/MainBoardView.vue";
 const $authStore = useAuthStore();
-const message = useMessage();
-const loading = ref(true); // Initialize loading state
+const $route = useRoute()
 
-const activeKey = ref('dashboard')
+const activeKey = ref('');
 
 function renderIcon (icon: Component) {
     return () => h(NIcon, null, { default: () => h(icon) })
@@ -68,32 +67,7 @@ const sidebarMenu = [
     }
 ]
 
-const githubIssues = ref(), githubPullRequests = ref()
-const githubIssueCount = ref(), githubPullReqCount = ref()
-const username = ref('')
-const users = ref(), userCount = ref()
-const website = ref('')
-const avatar_url = ref('')
-const userPosts = ref<Post[]>([]); // Replace with the appropriate type for your posts
-const loadingPosts = ref(false);
 const $router = useRouter()
-const $fetcher = useDataFetcher()
-
-onMounted(async () => {
-    loading.value = true
-    let profileData = await $fetcher.getProfile($authStore.state, message)
-    username.value = profileData?.username
-    website.value = profileData?.website
-    avatar_url.value = profileData?.avatar_url
-    users.value = await $fetcher.getUsers(message)
-    userCount.value = users.value?.length;
-    let githubData = await $fetcher.fetchGitHubData(message)
-    githubIssues.value = githubData?.issues
-    githubPullRequests.value = githubData?.pull_requests
-    githubIssueCount.value = githubIssues.value.length
-    githubPullReqCount.value = githubPullRequests.value.length
-    loading.value = false
-})
 
 const handleUpdateValue = (key: string) => {
     activeKey.value = key;
@@ -103,7 +77,7 @@ const handleUpdateValue = (key: string) => {
 </script>
 
 <template>
-    <ContentLoader :loading="loading">
+    <div>
         <div class="bg-zinc-800 min-h-screen w-full flex">
             <NLayout has-sider class="flex w-full">
                 <NLayoutSider has-sider class="h-full"
@@ -122,8 +96,7 @@ const handleUpdateValue = (key: string) => {
                 <NLayoutContent class="h-full w-full" :native-scrollbar="false">
                     <div class="p-10">
                         <RouterView v-slot="{ Component }">
-                            <component :is="Component"
-                                       :authStore="$authStore"/>
+                            <component :is="Component" :authStore="$authStore"/>
 <!--                            <component :is="PostsDashboardView" :posts="userPosts"/>-->
                         </RouterView>
                     </div>
@@ -131,7 +104,7 @@ const handleUpdateValue = (key: string) => {
                 </NLayoutContent>
             </NLayout>
         </div>
-    </ContentLoader>
+    </div>
 </template>
 
 <style scoped>

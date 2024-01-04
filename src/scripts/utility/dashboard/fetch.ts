@@ -1,10 +1,10 @@
 import axios from "axios";
 import {supabase} from "@/scripts/client";
+import type {User} from "@/scripts/types";
 
 /**
  * Fetches GitHub data from the given API endpoints.
  *
- * @param {any} message - The message object to display error message.
  * @returns {Promise<object>} - An object containing issues and pull requests data from GitHub.
  * @throws {Error} - Throws an error if there is an issue fetching the data.
  */
@@ -16,11 +16,11 @@ export const useDataFetcher = () => {
      * @returns An object containing issues and pull requests data from GitHub.
      * @throws Throws an error if there is an issue fetching the data.
      */
-    async function fetchGitHubData(message: any) {
+    async function fetchGitHubData(message: any): Promise<{ issues: any; pull_requests: any; } | undefined> {
         const issuesUrl = 'https://api.github.com/repos/infminecraft/infminecraft.github.io/issues?state=all';
         const pullsUrl = 'https://api.github.com/repos/infminecraft/infminecraft.github.io/pulls?state=all';
 
-        console.log("Started Fetching Data")
+        console.log("Started Fetching Github Data")
 
         try {
             const [issueResponse, pullResponse] = await Promise.all([
@@ -28,10 +28,10 @@ export const useDataFetcher = () => {
                 axios.get(pullsUrl)
             ]);
 
-            console.log("Finished Fetching Data")
+            console.log("Finished Fetching Github Data")
             return {issues: issueResponse.data, pull_requests: pullResponse.data}
         } catch (error) {
-            console.log("Fetch Data Error")
+            console.log("Fetch Github Data Error")
             if (error instanceof Error) {
                 message.error('Error fetching GitHub data: ' + error.message);
             }
@@ -66,9 +66,9 @@ export const useDataFetcher = () => {
      * @param {any} message - The message object used for displaying error messages.
      * @returns {Promise<object|undefined>} - A promise that resolves to the user profile object if found, or undefined if no profile is found.
      */
-    async function getProfile(state: any, message: any) {
+    async function getProfile(state: any, message: any): Promise<User | null | undefined> {
         if (!state.session) {
-            // Handle the case where there is no session, e.g., redirect to login or show a message.
+            // Handle the case where there is no session, e.g., redirect to log in or show a message.
             message.error('No session found. Please login again.');
             return;
         }
@@ -87,7 +87,7 @@ export const useDataFetcher = () => {
             if (error && status !== 406) throw error
 
             if (data) {
-                return {username: data.username, website: data.website, avatar_url: data.avatar_url}
+                return {username: data.username, website: data.website, avatar_url: data.avatar_url, id: user.id}
             }
         } catch (error) {
             if (error instanceof Error) message.error(error.message)
@@ -230,12 +230,13 @@ export const useDataFetcher = () => {
      *
      * @returns {Promise<void>}
      */
-    async function publishPost(title: string, content: string, author_id: string, message: any): Promise<void> {
+    async function publishPost(title: string, content: string, author_id: string, slug: string, message: any): Promise<void> {
         try {
+            const slug = title.toLowerCase().replace(/\s+/g, '-');
             const { data, error } = await supabase
                 .from('posts')
                 .insert([
-                    { title, content, author_id }
+                    { title, content, author_id, slug }
                 ]);
 
             if (error)
@@ -250,6 +251,84 @@ export const useDataFetcher = () => {
             message.error(`Error creating post: ${error.message}`);
         }
     }
+
+    /**
+     * Fetches user profile data based on the author_id from the 'profiles' table.
+     *
+     * @param {string} user_id - The UUID of the author whose profile data is to be retrieved.
+     *
+     * @returns {Promise<any>}
+     */
+    async function fetchUserProfile(user_id: string | any): Promise<any> {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', user_id)
+                .single();
+
+            if (error) {
+                throw new Error(typeof(error) == undefined ? "Unable to fetch user profile due to unknown errors." : error?.message);
+            }
+
+            console.log('User profile data: ', data);
+            return data;
+        } catch (error: any) {
+            console.error('Error fetching user profile: ', error);
+        }
+    }
+
+    /**
+     * Edits a post using the provided post ID, modified title, and content.
+     *
+     * @param {string} author_id - The UUID of the author of the post.
+     * @param {number} postId - The ID of the post to be edited.
+     * @param {string} modifiedTitle - The new title for the post.
+     * @param {string} modifiedContent - The new content for the post.
+     * @param modifiedSlug
+     * @param {any} message - The message object used for displaying notifications or errors.
+     *
+     * @returns {Promise<void>}
+     */
+    async function editUserPost(author_id: string, postId: number, modifiedTitle: string, modifiedContent: string, modifiedSlug: string, message: any): Promise<void> {
+        try {
+            console.log("Validating Post Data....")
+            // Attempt to fetch the existing post first to verify it belongs to the author
+            const { data: postData, error: postError } = await supabase
+                .from('posts')
+                .select('*')
+                .eq('postId', postId)
+                .eq('author_id', author_id)
+                .single();
+
+            if (postError) {
+                throw new Error(postError.message);
+            }
+
+            if (!postData) {
+                throw new Error('Post not found or you do not have permission to edit this post.');
+            }
+            console.log("Validated.\nUploading edited data...")
+            // Perform the update operation
+            const { data, error } = await supabase
+                .from('posts')
+                .update({ title: modifiedTitle, content: modifiedContent, slug: modifiedSlug })
+                .match({ postId: postId, author_id: author_id });
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            // Optionally, use the returned 'data' to do something, e.g., show success message
+            console.log('Post updated: ', data);
+            message.success('Post edited successfully');
+        } catch (error: Error | any) {
+            // Log the error and show it to the user
+            console.error('Error editing post: ', error);
+            message.error(`Error editing post: ${error?.message}`);
+        }
+    }
+
     return {
         fetchGitHubData,
         getUsers,
@@ -259,5 +338,7 @@ export const useDataFetcher = () => {
         signOut,
         deletePosts,
         publishPost,
+        fetchUserProfile,
+        editUserPost,
     };
 }

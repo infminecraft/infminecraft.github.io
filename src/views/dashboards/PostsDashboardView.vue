@@ -9,7 +9,7 @@ import {
     NFormItem,
     NModal,
     NScrollbar,
-    NSkeleton,
+    NSkeleton, NSwitch,
     useMessage
 } from "naive-ui";
 import type {DataTableColumn, DataTableRowKey} from "naive-ui"
@@ -20,6 +20,8 @@ import { MdEditor } from 'md-editor-v3';
 import 'md-editor-v3/lib/style.css';
 import {useDashboardStore} from "@/scripts/utility/dashboard/dashboardStore";
 import {supabase} from "@/scripts/client";
+
+// Dependency & Tools
 const props = defineProps({
     authStore: Object
 })
@@ -36,12 +38,17 @@ const channels = supabase.channel('custom-all-channel')
         { event: '*', schema: 'public', table: 'posts' },
         async (payload) => {
             console.log('Change received!', payload)
-            await refreshData()
+            await reloadPage()
         }
     )
     .subscribe()
 
 onMounted(async () => {
+    await reloadPage()
+})
+
+// Functions
+async function reloadPage(){
     loadingPage.value = true
 
     // posts.value = await $fetcher.fetchUserPosts(props.authStore?.state, message)
@@ -52,28 +59,35 @@ onMounted(async () => {
     addPostsData()
 
     loadingPage.value = false
-})
-
-async function refreshData(){
-    posts.value = await dashboardStore.fetchPosts(props.authStore?.state, message, true)
-    setPosts(posts.value)
-    addPostsData()
 }
 
 type PostRowData = {
-    title: String, created_at: any, updated_at: any, postId: Number
+    title: String, created_at: any, updated_at: any, postId: Number, content: string, author_id: string, slug: string
 }
 
 function edit(row: PostRowData) {
     console.log('Edit post:', row)
-    // Add your edit handler here...
+    let tempRow
+    for(let i = 0; i < posts.value.length; i++){
+        if(row.postId == posts.value[i]?.postId && posts.value.author_id == posts.value[i]?.author_id){
+            tempRow = posts.value[i]
+            break;
+        }
+    }
+    showEditPostModal.value = true;
+    editPostFormModel.value.title = row.title.toString()
+    editPostContent.value = row.content.toString()
+    editPostFormModel.value.slug = row.slug.toString()
+    editPostAuthorId.value = row.author_id.toString()
+    editPostId.value = row.postId.valueOf()
 }
 
 function setPosts(postList: Post[]) {
     if (!postList) return;
-    function createPost({postId, title, content, author_id, created_at, updated_at}: Post): Post {
-        return { postId, title, content, author_id, created_at, updated_at };
+    function createPost({postId, title, content, author_id, created_at, updated_at, slug}: Post): Post {
+        return { postId, title, content, author_id, created_at, updated_at, slug };
     }
+    postsList.value.length = 0
     for(const post of postList) {
         postsList.value.push(createPost(post));
     }
@@ -85,12 +99,35 @@ function addPostsData() {
         data.push({
             id: postsList.value[i].postId,  // <-- Add this line
             title: postsList.value[i].title,
-            created_at: postsList.value[i].created_at,
-            updated_at: postsList.value[i].updated_at
+            created_at: formatDateToMMMddYYYY(postsList.value[i].created_at),
+            updated_at: formatDateToMMMddYYYY(postsList.value[i].updated_at),
+            author_id: postsList.value[i].author_id,
+            slug: postsList.value[i].slug,
+            content: postsList.value[i].content,
+            postId: postsList.value[i].postId
         })
     }
 }
 
+function formatDateToMMMddYYYY(isoTimestamp: string): string {
+    // Create a new Date object from the timestamp
+    const date = new Date(isoTimestamp);
+
+    // Create an options object for formatting
+    const options: any = { year: 'numeric', month: 'short', day: 'numeric' };
+
+    // Use Intl.DateTimeFormat to format the date
+    return new Intl.DateTimeFormat('en-US', options).format(date);
+}
+
+function createSlug(title: string): string {
+    return title
+        .toLowerCase() // Convert the title to lower case
+        .replace(/[^a-z0-9\s]/g, '') // Remove any non-alphanumeric or whitespace characters
+        .replace(/\s+/g, '-'); // Replace white spaces with hyphen
+}
+
+// Data Table Reference
 const dataTable = ref()
 const columns: DataTableColumn<any>[] = [
     {
@@ -138,10 +175,10 @@ const handleCheck = (rowKeys: DataTableRowKey[]) => {
     console.log(checkedRowKeysRef.value)
 }
 
+//Delete Post Modal
 const showConfirmDeleteModal = ref(false)
 const showCreatePostModel = ref(false)
 const deletingPosts = ref(false)
-
 const onPositiveClick = async () => {
     deletingPosts.value = true
     let ids: any = []
@@ -159,23 +196,50 @@ const onNegativeClick = () => {
     showConfirmDeleteModal.value = false;
 }
 
-
+// Create Post Modal
+const newPostText = ref(''), newPostAutoSlug = ref(true), awaitPublishingPost = ref(false)
 const createPostFormRules = {
     title: [
         { required: true, message: 'Please enter the title', trigger: 'blur' },
         { min: 3, max: 100, message: 'Title length should be between 3 and 100 characters', trigger: 'blur' }
+    ],
+    slug: [
+        { required: true, message: 'Please enter the slug', trigger: 'blur' },
+        { pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*$/, message: 'Slug should be in kebab-case (i.e., lowercase alphanumeric characters separated by single hyphens)', trigger: 'blur' },
+        { min: 3, max: 100, message: 'Slug length should be between 3 and 100 characters', trigger: 'blur' }
     ]
 }
-const createPostFormModel = ref({
-    title: ''
-})
+const createPostFormModel = ref({title: '', slug: ''})
 const formRef = ref(null)
-const newPostText = ref(''), newPostTitle = ref(''), awaitPublishingPost = ref(false)
+const onTypeTitle = (title: string) => {
+    if (newPostAutoSlug) createPostFormModel.value.slug = createSlug(createPostFormModel.value.title)
+}
 const tryPublishPost = async () => {
     awaitPublishingPost.value = true
-    await $fetcher.publishPost(newPostTitle.value, newPostText.value, userData.id, message)
+    await $fetcher.publishPost(createPostFormModel.value.title, newPostText.value, userData.id, createPostFormModel.value.slug ? createSlug(createPostFormModel.value.title) : createPostFormModel.value.slug, message)
     awaitPublishingPost.value = false
     showCreatePostModel.value = false
+}
+
+// Edit post modal
+const showEditPostModal = ref(false), editPostTitle = ref(""), editPostContent = ref(''), editPostSlug = ref(''), editPostAuthorId = ref(''), editPostId = ref<number>(-1)
+const editPostFormRules = {
+    title: [
+        { required: true, message: 'Please enter the title', trigger: 'blur' },
+        { min: 3, max: 100, message: 'Title length should be between 3 and 100 characters', trigger: 'blur' }
+    ],
+    slug: [
+        { required: true, message: 'Please enter the slug', trigger: 'blur' },
+        { pattern: /^[a-z0-9]+(?:-[a-z0-9]+)*$/, message: 'Slug should be in kebab-case (i.e., lowercase alphanumeric characters separated by single hyphens)', trigger: 'blur' },
+        { min: 3, max: 100, message: 'Slug length should be between 3 and 100 characters', trigger: 'blur' }
+    ]
+}
+const editPostFormModel = ref({title: editPostTitle.value, slug: editPostSlug}), awaitEditingPost = ref(false)
+const tryEditPost = async () => {
+    awaitEditingPost.value = true
+    await $fetcher.editUserPost(editPostAuthorId.value, editPostId.value, editPostFormModel.value.title, editPostContent.value, editPostFormModel.value.slug, message)
+    awaitEditingPost.value = false
+    showEditPostModal.value = false
 }
 
 </script>
@@ -190,17 +254,49 @@ const tryPublishPost = async () => {
             <NCard class="w-full flex m-3 p-2">
                 <div>
                     <div class="text-zinc-50 text-3xl font-bold mb-4">Create New Post</div>
-                    <NForm ref="formRef" :model="createPostFormModel" :rules="createPostFormRules">
+                    <NForm ref="formRef" :model="createPostFormModel" :rules="createPostFormRules" :disabled="awaitPublishingPost">
                         <NFormItem path="title" label="Title">
-                            <NInput v-model:value="newPostTitle"/>
+                            <NInput v-model:value="createPostFormModel.title" @input="onTypeTitle"/>
+                        </NFormItem>
+                        <NFormItem path="autoSlug" label="Auto-Generate Slug">
+                            <NSwitch v-model:value="newPostAutoSlug"/>
+                        </NFormItem>
+                        <NFormItem path="slug" label="Slug">
+                            <NInput v-model:value="createPostFormModel.slug" :disabled="newPostAutoSlug"/>
                         </NFormItem>
                         <NFormItem path="content" label="Content" class="mt-1">
                             <MdEditor v-model="newPostText"/>
                         </NFormItem>
                     </NForm>
                     <div class="flex gap-2 w-full justify-end">
-                        <NButton strong secondary type="default" @click="showCreatePostModel=false" size="large">Cancel</NButton>
-                        <NButton strong primary type="primary" size="large" :loading="awaitPublishingPost" @click="tryPublishPost()">Publish</NButton>
+                        <NButton strong secondary type="default" @click="showCreatePostModel=false" size="large" :disabled="awaitPublishingPost">Cancel</NButton>
+                        <NButton strong primary type="primary" size="large" :loading="awaitPublishingPost" @click="tryPublishPost()" :disabled="awaitPublishingPost">Publish</NButton>
+                    </div>
+                </div>
+            </NCard>
+        </NModal>
+        <NModal
+            :mask-closable="false"
+            v-model:show="showEditPostModal"
+            :title="'Editing Post'"
+        >
+            <NCard class="w-full flex m-3 p-2">
+                <div>
+                    <div class="text-zinc-50 text-3xl font-bold mb-4">Create New Post</div>
+                    <NForm ref="formRef" :model="editPostFormModel" :rules="editPostFormRules" :disabled="awaitEditingPost">
+                        <NFormItem path="title" label="Title">
+                            <NInput v-model:value="editPostFormModel.title"/>
+                        </NFormItem>
+                        <NFormItem path="slug" label="Slug">
+                            <NInput v-model:value="editPostFormModel.slug"/>
+                        </NFormItem>
+                        <NFormItem path="content" label="Content" class="mt-1">
+                            <MdEditor v-model="editPostContent"/>
+                        </NFormItem>
+                    </NForm>
+                    <div class="flex gap-2 w-full justify-end">
+                        <NButton strong secondary type="default" @click="showEditPostModal=false" size="large" :disabled="awaitEditingPost">Cancel</NButton>
+                        <NButton strong primary type="primary" size="large" :loading="awaitEditingPost" @click="tryEditPost()" :disabled="awaitEditingPost">Publish</NButton>
                     </div>
                 </div>
             </NCard>
@@ -227,7 +323,7 @@ const tryPublishPost = async () => {
         <NDivider/>
         <div class="w-full h-full" v-if="!loadingPage">
             <NScrollbar>
-                <NDataTable ref="dataTable" :columns="columns" :data="data" :row-key="rowKey" @update:checked-row-keys="handleCheck"/>
+                <NDataTable ref="dataTable" :columns="columns" :data="data" :row-key="rowKey" @update:checked-row-keys="handleCheck" @update-page="reloadPage"/>
             </NScrollbar>
         </div>
         <div class="w-full h-full" v-else>

@@ -6,4 +6,12 @@ export type Post = {
     author_id: string; // ID of the user who authored the post
     created_at: string; // Creation timestamp, assuming ISO 8601 format
     updated_at: string; // Last update timestamp, assuming ISO 8601 format
+    slug: string;
 };
+
+export type User = {
+    username: any;
+    website: any;
+    avatar_url: any;
+    id: any;
+}

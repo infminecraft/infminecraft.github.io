@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes neon-flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        text-shadow: 0 0 3px #00fff2, 0 0 5px #00fff2, 0 0 8px #00fff2, 0 0 10px #00fff2, 0 0 15px #00fff2;
+        color: #fafafa;
+    }
+    20%, 24%, 55% {
+        text-shadow: none;
+        color: #00fff2;
+    }
+}
+
+.neon-effect {
+    animation: neon-flicker 1.5s infinite ease-in-out;
+}

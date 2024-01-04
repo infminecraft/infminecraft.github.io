@@ -28,7 +28,7 @@ export function useAuthStore() {
     }
 
     return {
-        state: readonly(state),
+        state,
         checkSession,
         updateSession
     }

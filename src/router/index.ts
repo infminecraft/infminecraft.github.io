@@ -10,6 +10,10 @@ import NotFound404 from "@/views/NotFound404.vue";
 import {useAuthStore} from "@/scripts/authentication/store";
 import PostsDashboardView from "@/views/dashboards/PostsDashboardView.vue";
 import MainBoardView from "@/views/dashboards/MainBoardView.vue"
+import PostPageView from "@/views/PostPageView.vue";
+import UserManagementView from "@/views/dashboards/UserManagementView.vue";
+import GitHubIssuesView from "@/views/dashboards/GitHubIssuesView.vue";
+import GitHubPullRequestsView from "@/views/dashboards/GitHubPullRequestsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,8 +67,30 @@ const router = createRouter({
           name: 'posts',
           component: PostsDashboardView,
           props: true
+        },
+        {
+          path: 'users',
+          name: 'users',
+          component: UserManagementView,
+          props: true
+        },
+        {
+          path: 'issues',
+          name: 'issues',
+          component: GitHubIssuesView,
+          props: true
+        },
+        {
+          path: 'pull-requests',
+          name: 'pull-requests',
+          component: GitHubPullRequestsView,
+          props: true
         }
       ]
+    },
+    {
+      path: '/post/:slug',
+      component: PostPageView
     },
     {
       path: '/:pathMatch(.*)*',
