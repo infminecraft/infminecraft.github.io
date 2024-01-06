@@ -96,7 +96,7 @@ const handleUpdateValue = (key: string) => {
                                 <NGradientText class="font-bold text-2xl">InfMinecraft</NGradientText>
                             </NCollapseTransition>
                             <div class="object-contain">
-                                <img width="44" src="public/infmc-icon.png">
+                                <img width="44" src="../../public/infmc-icon.png">
                             </div>
                         </div>
                         <NMenu :options="sidebarMenu"
@@ -111,7 +111,6 @@ const handleUpdateValue = (key: string) => {
                     <div class="p-10">
                         <RouterView v-slot="{ Component }">
                             <component :is="Component" :authStore="$authStore"/>
-                            <!--                            <component :is="PostsDashboardView" :posts="userPosts"/>-->
                         </RouterView>
                     </div>
                     <Copyrighter/>
