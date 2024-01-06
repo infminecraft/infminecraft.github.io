@@ -16,9 +16,10 @@ import {signOut, isValidEmail} from '@/scripts/authentication/auth'
 import type {FormInst} from "naive-ui/lib";
 import {supabase} from "@/scripts/client";
 import {RouterLink, RouterView, useRouter} from "vue-router";
+import {useAuthStore} from "@/scripts/authentication/store";
 
-const session = ref()
 const $router = useRouter()
+const $authStore = useAuthStore()
 
 const form = ref<FormInst | null>(null)
 const message = useMessage(), emailInput = ref(''), loading = ref(false), inAuth = ref(false)
@@ -44,6 +45,17 @@ async function tryOtpLogin() {
     loading.value = false
     inAuth.value = true
 }
+
+const userSession = ref($authStore.state.session);
+
+supabase.auth.onAuthStateChange((_event, session) => {
+    userSession.value = session;
+    if (session) {
+        // Perform additional logic or navigation when the user logs in
+        console.log('User logged in:', session);
+        $router.push('/dashboard');
+    }
+});
 </script>
 
 <template>
