@@ -9,9 +9,17 @@ export const useDashboardStore = defineStore({
     state: () => ({
         posts: [] as Post[],
         user: null as User | null,
-        users: [] as User[]
+        users: [] as User[],
+        allPosts: [] as Post[]
     }),
     actions: {
+        async fetchAllPosts(message: any, forceRefresh: boolean = false) {
+            if (this.allPosts.length === 0 || forceRefresh){
+                const $fetcher = useDataFetcher();
+                this.allPosts = await $fetcher.fetchAllPosts(message);
+            }
+            return this.allPosts;
+        },
         async fetchPosts(state: any, message: any, forceRefresh: boolean = false) {
             if (this.posts.length === 0 || forceRefresh) {
                 const $fetcher = useDataFetcher();

@@ -1,6 +1,6 @@
 import axios from "axios";
 import {supabase} from "@/scripts/client";
-import type {User} from "@/scripts/types";
+import type {Commit, GitHubFormattedIssue, Issue, Post, PullRequest, User} from "@/scripts/types";
 
 /**
  * Fetches GitHub data from the given API endpoints.
@@ -331,6 +331,74 @@ export const useDataFetcher = () => {
         }
     }
 
+    async function fetchAllPosts(message: any) {
+        try {
+            let { data: posts, error } = await supabase
+                .from('posts')
+                .select('*');
+
+            if (error) throw error;
+
+            return posts || [];
+        } catch (error: any) {
+            console.error(`Error retrieving posts: ${error.message}`);
+            message.error(`Error retrieving posts: ${error.message}`);
+        }
+        return [];
+    }
+
+    async function fetchGithubCommits(repositoryName: string, ownerName: string) {
+        try {
+            const response = await axios.get(`https://api.github.com/repos/${ownerName}/${repositoryName}/commits`);
+            const commits = response.data;
+
+            return commits.map((commit: Commit) => ({
+                commit_date: commit.commit.author.date.split('T')[0],
+                commit_name: commit.commit.message,
+                commit_user_name: commit.commit.author.name,
+                commit_user_email: commit.commit.author.email
+            }));
+        } catch (error) {
+            console.error(`Error fetching GitHub commits: ${error}`);
+            throw error;
+        }
+    }
+
+    async function fetchGithubIssues(repositoryName: string, ownerName: string) {
+        try {
+            const response = await axios.get(`https://api.github.com/repos/${ownerName}/${repositoryName}/issues`);
+            const issues = response.data;
+
+            return issues.map((issue: Issue) => ({
+                issue_created_date: issue.created_at.split('T')[0],
+                issue_name: issue.title,
+                issue_user_name: issue.user.login,
+                is_open: issue.state === 'open'
+            }));
+        } catch (error) {
+            console.error(`Error fetching GitHub issues: ${error}`);
+            throw error;
+        }
+    }
+
+    async function fetchGithubPullRequests(repositoryName: string, ownerName: string) {
+        try {
+            const response = await axios.get(`https://api.github.com/repos/${ownerName}/${repositoryName}/pulls`);
+            const pullRequests = response.data;
+
+            return pullRequests.map((pr: PullRequest) => ({
+                pull_request_created_date: pr.created_at.split('T')[0],
+                pull_request_name: pr.title,
+                pull_request_user_name: pr.user.login,
+                pull_request_user_email: '', // GitHub API doesn't provide user emails in pull requests
+                is_merged: pr.merged_at != null
+            }));
+        } catch (error) {
+            console.error(`Error fetching GitHub pull requests: ${error}`);
+            throw error;
+        }
+    }
+
     return {
         fetchGitHubData,
         getUsers,
@@ -342,5 +410,6 @@ export const useDataFetcher = () => {
         publishPost,
         fetchUserProfile,
         editUserPost,
+        fetchAllPosts,
     };
 }
