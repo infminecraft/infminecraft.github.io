@@ -69,6 +69,7 @@ const sidebarMenu = [
 ]
 
 const $router = useRouter()
+const sidebarCollapsed = ref(true)
 
 const handleUpdateValue = (key: string) => {
     activeKey.value = key;
@@ -86,13 +87,25 @@ const handleUpdateValue = (key: string) => {
                               collapse-mode="width"
                               :collapsed-width="64"
                               :width="240"
-                              :native-scrollbar="false">
-                    <NMenu :options="sidebarMenu"
-                           :collapsed-width="64"
-                           :collapsed-icon-size="20"
-                           v-model:value="activeKey"
-                           :on-update-value="handleUpdateValue"
-                    />
+                              :native-scrollbar="false"
+                              v-model:collapsed="sidebarCollapsed"
+                >
+                    <div class="flex flex-col py-2 gap-2">
+                        <div class="items-center justify-center text-center flex flex-row cursor-pointer" @click="$router.push('/')">
+                            <NCollapseTransition :show="!sidebarCollapsed" class="w-fit">
+                                <NGradientText class="font-bold text-2xl">InfMinecraft</NGradientText>
+                            </NCollapseTransition>
+                            <div class="object-contain">
+                                <img width="44" src="public/infmc-icon.png">
+                            </div>
+                        </div>
+                        <NMenu :options="sidebarMenu"
+                               :collapsed-width="64"
+                               :collapsed-icon-size="20"
+                               v-model:value="activeKey"
+                               :on-update-value="handleUpdateValue"
+                        />
+                    </div>
                 </NLayoutSider>
                 <NLayoutContent class="h-full w-full" :native-scrollbar="false">
                     <div class="p-10">

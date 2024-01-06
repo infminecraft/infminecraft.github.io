@@ -29,6 +29,8 @@ export const useDataFetcher = () => {
             ]);
 
             console.log("Finished Fetching Github Data")
+            console.log(issueResponse.data)
+            console.log(pullResponse.data)
             return {issues: issueResponse.data, pull_requests: pullResponse.data}
         } catch (error) {
             console.log("Fetch Github Data Error")
