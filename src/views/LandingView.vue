@@ -54,7 +54,7 @@ const users = ref<User[]>([])
 const loadingPage = ref(false)
 onMounted(async () => {
     loadingPage.value = true
-    posts.value = await $dashboardStore.fetchPosts($authStore.state, $message)
+    posts.value = await $dashboardStore.fetchAllPosts($message)
     users.value = await $dashboardStore.fetchUsers($message)
     loadingPage.value = false;
 })
