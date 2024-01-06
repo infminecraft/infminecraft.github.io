@@ -1,8 +1,8 @@
 <script setup lang="ts">
 
 import {NAvatar, NCard, NDivider, NIcon, NSkeleton, useMessage} from "naive-ui";
-import { useRouter } from "vue-router"; // Add vue-router
-import { onMounted, ref } from 'vue'
+import {useRouter} from "vue-router"; // Add vue-router
+import {onMounted, ref} from 'vue'
 import {GitMerge, GitPullRequest, NewspaperOutline, PersonCircle} from "@vicons/ionicons5";
 import {useAuthStore} from "@/scripts/authentication/store";
 import {useDataFetcher} from "@/scripts/utility/dashboard/fetch";
@@ -21,7 +21,7 @@ const loadingPage = ref(false)
 const user = ref<User | null>()
 const posts = ref<any[]>([])
 const users = ref<User[] | null>([])
-const githubData = ref<{issues: any, pull_requests: any} | null>()
+const githubData = ref<{ issues: any, pull_requests: any } | null>()
 
 const navigate = (path: any) => {
     $router.push('/dashboard/' + path); // router navigation logic
@@ -30,7 +30,7 @@ const navigate = (path: any) => {
 const channel = supabase.channel('custom-all-channel')
     .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'posts' },
+        {event: '*', schema: 'public', table: 'posts'},
         async (payload) => {
             console.log('Change received!', payload)
             await $dashboardStore.fetchPosts(props.authStore?.state, $message, true)
@@ -44,7 +44,7 @@ onMounted(async () => {
     user.value = await $dashboardStore.fetchUser(props.authStore?.state, $message)
     users.value = await $dashboardStore.fetchUsers($message)
     let tempPosts: Post[] = await $dashboardStore.fetchPosts(props.authStore?.state, $message)
-    for(let i = 0; i < tempPosts.length; i++)
+    for (let i = 0; i < tempPosts.length; i++)
         if (tempPosts[i].author_id == user.value?.id) posts.value.push(tempPosts[i])
     githubData.value = await $fetcher.fetchGitHubData($message)
 
@@ -56,7 +56,7 @@ onMounted(async () => {
 <template>
     <div class="gap-2 justify-items-start" v-if="!loadingPage">
         <div class="flex items-center gap-3">
-            <div class="font-bold text-4xl">Hello, {{user?.username}}</div>
+            <div class="font-bold text-4xl">Hello, {{ user?.username }}</div>
             <NAvatar round :src="user?.avatar_url" size="large"/>
         </div>
         <div class="text-zinc-500 mt-3">Did you have a good day today?</div>
@@ -71,7 +71,7 @@ onMounted(async () => {
                     </div>
                     <div class="flex-grow">
                         <div class="text-zinc-500">Posts</div>
-                        <div class="font-bold text-2xl">{{posts.length}}</div>
+                        <div class="font-bold text-2xl">{{ posts.length }}</div>
                     </div>
                 </div>
             </NCard>
@@ -84,7 +84,7 @@ onMounted(async () => {
                     </div>
                     <div class="flex-grow">
                         <div class="text-zinc-500">Users</div>
-                        <div class="font-bold text-2xl">{{users?.length}}</div>
+                        <div class="font-bold text-2xl">{{ users?.length }}</div>
                     </div>
                 </div>
             </NCard>
@@ -97,7 +97,7 @@ onMounted(async () => {
                     </div>
                     <div class="flex-grow">
                         <div class="text-zinc-500">Issues</div>
-                        <div class="font-bold text-2xl">{{githubData?.issues.length}}</div>
+                        <div class="font-bold text-2xl">{{ githubData?.issues.length }}</div>
                     </div>
                 </div>
             </NCard>
@@ -110,7 +110,7 @@ onMounted(async () => {
                     </div>
                     <div class="flex-grow">
                         <div class="text-zinc-500">Pull Requests</div>
-                        <div class="font-bold text-2xl">{{githubData?.pull_requests.length}}</div>
+                        <div class="font-bold text-2xl">{{ githubData?.pull_requests.length }}</div>
                     </div>
                 </div>
             </NCard>

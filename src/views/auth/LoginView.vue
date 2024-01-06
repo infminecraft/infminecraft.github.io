@@ -23,21 +23,21 @@ const $router = useRouter()
 const form = ref<FormInst | null>(null)
 const message = useMessage(), emailInput = ref(''), loading = ref(false), inAuth = ref(false)
 
-async function tryOtpLogin(){
+async function tryOtpLogin() {
     loading.value = true
-    if (!isValidEmail(emailInput.value)){
+    if (!isValidEmail(emailInput.value)) {
         message.error("Please enter a valid email format.")
         loading.value = false
         return
     }
     try {
-        const { error } = await supabase.auth.signInWithOtp({
+        const {error} = await supabase.auth.signInWithOtp({
             email: emailInput.value
         })
         if (error) throw error
         message.success("Check your email for the login link.")
     } catch (error) {
-        if(error instanceof Error) message.error(error.message)
+        if (error instanceof Error) message.error(error.message)
         loading.value = false
         return
     }
@@ -54,7 +54,8 @@ async function tryOtpLogin(){
                 InfMinecraft Dashboard
             </NGradientText>
             <NCard>
-                <NTabs default-value="signin" size="large" justify-content="space-evenly" class="px-2 pb-4" v-if="!inAuth">
+                <NTabs default-value="signin" size="large" justify-content="space-evenly" class="px-2 pb-4"
+                       v-if="!inAuth">
                     <NTabPane name="signin" tab="Sign In" class="flex-col flex gap-4">
                         <NInput v-model:value="emailInput" placeholder="Email"/>
                         <NButton :loading="loading" type="primary" block secondary strong @click="tryOtpLogin">
@@ -63,7 +64,9 @@ async function tryOtpLogin(){
                     </NTabPane>
                 </NTabs>
                 <div v-else>
-                    <NGradientText :font-size="16">We've sent you an email. You should be able to log in with this link.</NGradientText>
+                    <NGradientText :font-size="16">We've sent you an email. You should be able to log in with this
+                        link.
+                    </NGradientText>
                 </div>
             </NCard>
             <NButton @click="$router.push('/')" class="justify-self-center w-full mt-5" text>Back to Menu</NButton>

@@ -3,6 +3,7 @@ import {ref, onBeforeMount} from 'vue';
 import {useRoute, useRouter} from "vue-router";
 import {supabase} from "@/scripts/client";
 import {NAvatar, NButton, NDivider, NIcon, NLayout, NLayoutFooter, NLayoutHeader, NSkeleton} from "naive-ui";
+// @ts-ignore
 import VueMarkdown from "vue-markdown-render/src/VueMarkdown";
 import {ArrowBack} from "@vicons/ionicons5"
 import {useDataFetcher} from "@/scripts/utility/dashboard/fetch";

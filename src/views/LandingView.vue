@@ -41,7 +41,7 @@ const descriptionCards = [
     }
 ]
 
-function toGetStarted(){
+function toGetStarted() {
     window.open("https://docs.qq.com/form/page/DR2lMVGtlT3NKc1F4")
 }
 
@@ -60,7 +60,7 @@ onMounted(async () => {
 })
 
 function findUserFromId(id: string): User | undefined {
-    for(let i = 0; i < users.value.length; i++)
+    for (let i = 0; i < users.value.length; i++)
         if (users.value[i].id == id) return users.value[i];
 }
 
@@ -69,7 +69,7 @@ function formatDateToMMMddYYYY(isoTimestamp: string): string {
     const date = new Date(isoTimestamp);
 
     // Create an options object for formatting
-    const options: any = { year: 'numeric', month: 'short', day: 'numeric' };
+    const options: any = {year: 'numeric', month: 'short', day: 'numeric'};
 
     // Use Intl.DateTimeFormat to format the date
     return new Intl.DateTimeFormat('en-US', options).format(date);
@@ -91,11 +91,18 @@ function formatDateToMMMddYYYY(isoTimestamp: string): string {
                     <div class="absolute inset-0 flex flex-col items-center justify-center align-middle">
                         <div class="flex flex-col items-center justify-center align-middle">
                             <div class="flex">
-                                <NGradientText class="text-6xl font-bold text-center bg-gradient-to-r from-green-100 to-green-400 opacity-90">InfMinecraft 我的世界服务器</NGradientText>
+                                <NGradientText
+                                    class="text-6xl font-bold text-center bg-gradient-to-r from-green-100 to-green-400 opacity-90">
+                                    InfMinecraft 我的世界服务器
+                                </NGradientText>
                             </div>
                             <div class="mt-5 flex gap-5">
-                                <NButton type="primary" strong size="large" @click="toGetStarted()">Get Started 加入服务器</NButton>
-                                <NButton type="primary" strong secondary size="large" @click="$router.push('docs')">Learn More 更多信息</NButton>
+                                <NButton type="primary" strong size="large" @click="toGetStarted()">Get Started
+                                    加入服务器
+                                </NButton>
+                                <NButton type="primary" strong secondary size="large" @click="$router.push('docs')">
+                                    Learn More 更多信息
+                                </NButton>
                             </div>
                         </div>
                     </div>
@@ -103,30 +110,36 @@ function formatDateToMMMddYYYY(isoTimestamp: string): string {
                 </NLayoutContent>
                 <NLayout class="px-10 py-4 w-fit">
                     <NDivider class="text-4xl flex justify-center font-bold mb-6">Features 特性</NDivider>
-                    <NGrid class="w-fit flex items-center justify-center" :x-gap="20" :y-gap="20" cols="3 100:1 600:2 1000:3">
+                    <NGrid class="w-fit flex items-center justify-center" :x-gap="20" :y-gap="20"
+                           cols="3 100:1 600:2 1000:3">
                         <NGridItem v-for="desc in descriptionCards" class="flex h-full w-full">
                             <NCard size="large" class="w-full h-full flex" :title="desc.title" hoverable>
                                 <template #cover>
                                     <img :src="desc.imageSource" class="object-cover w-full" alt="Card Header Image"/>
                                 </template>
-                                <NText>{{desc.english}}</NText>
+                                <NText>{{ desc.english }}</NText>
                                 <NDivider/>
-                                <NText>{{desc.chinese}}</NText>
+                                <NText>{{ desc.chinese }}</NText>
                             </NCard>
                         </NGridItem>
                     </NGrid>
                 </NLayout>
                 <NLayout class="px-10 py-3 w-full">
                     <NDivider class="text-4xl flex justify-center font-bold mb-6">Posts 帖子</NDivider>
-                    <NGrid class="w-full flex items-center justify-center" :y-gap="20" :x-gap="20" cols="2" v-if="!loadingPage">
+                    <NGrid class="w-full flex items-center justify-center" :y-gap="20" :x-gap="20" cols="2">
                         <NGridItem v-for="post in posts" class="flex h-full w-full cursor-pointer">
-                            <NCollapseTransition :show="loadingPage">
+                            <NCollapseTransition :show="!loadingPage">
                                 <NCard hoverable class="h-fit">
                                     <div class="flex gap-3">
                                         <div class="flex-grow">
-                                            <div class="text-2xl font-bold">{{post.title}}</div>
+                                            <div class="text-2xl font-bold">{{ post.title }}</div>
                                             <div class="text-zinc-500 flex items-center">
-                                                Created at {{formatDateToMMMddYYYY(post.created_at)}} by {{findUserFromId(post.author_id)?.username}} <div class="flex scale-10 ml-1"><NAvatar :src="findUserFromId(post.author_id)?.avatar_url" round size="small"/></div>
+                                                Created at {{ formatDateToMMMddYYYY(post.created_at) }} by
+                                                {{ findUserFromId(post.author_id)?.username }}
+                                                <div class="flex scale-10 ml-1">
+                                                    <NAvatar :src="findUserFromId(post.author_id)?.avatar_url" round
+                                                             size="small"/>
+                                                </div>
                                             </div>
                                         </div>
                                         <RouterLink :to="'/post/' + post.slug">
@@ -137,7 +150,8 @@ function formatDateToMMMddYYYY(isoTimestamp: string): string {
                             </NCollapseTransition>
                         </NGridItem>
                     </NGrid>
-                    <NCollapseTransition class="w-full items-center justify-center gap-3 grid-cols-2 grid" v-else :show="loadingPage">
+                    <NCollapseTransition class="w-full items-center justify-center gap-3 grid-cols-2 grid"
+                                         :show="loadingPage">
                         <NSkeleton height="80px" class="w-full"/>
                         <NSkeleton height="80px" class="w-full"/>
                         <NSkeleton height="80px" class="w-full"/>

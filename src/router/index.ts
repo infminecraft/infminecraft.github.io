@@ -1,7 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHashHistory, createWebHistory} from 'vue-router'
 import LandingView from "@/views/LandingView.vue";
 import DocumentationView from "@/views/DocumentationView.vue";
-import PostsView from "@/views/PostsView.vue";
 import LoginView from "@/views/auth/LoginView.vue";
 import {supabase} from "@/scripts/client";
 import DashboardView from "@/views/DashboardView.vue";
@@ -32,11 +31,6 @@ const router = createRouter({
       path: '/donate',
       name: 'donate',
       component: LandingView
-    },
-    {
-      path: '/posts',
-      name: 'posts',
-      component: PostsView
     },
     {
       path: '/login',
