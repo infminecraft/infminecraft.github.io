@@ -1,17 +1,24 @@
 <script setup lang="ts">
 import {
+    NAvatar,
     NButton, NCard,
     NCarousel, NDivider,
     NGradientText, NGrid, NGridItem,
     NLayout,
-    NLayoutContent, NScrollbar,
-    NText
+    NLayoutContent, NScrollbar, NSkeleton,
+    NText,
+    useMessage
 } from "naive-ui";
 import bg1 from "@/assets/images/bg1.png"
 import bg3 from "@/assets/images/bg3.png"
 import bg4 from "@/assets/images/bg4.png"
 import Copyrighter from "@/components/Copyrighter.vue";
 import {RouterLink} from "vue-router";
+import {ref, onMounted} from "vue";
+import {useDataFetcher} from "@/scripts/utility/dashboard/fetch";
+import type {Post, User} from "@/scripts/types";
+import {useAuthStore} from "@/scripts/authentication/store";
+import {useDashboardStore} from "@/scripts/utility/dashboard/dashboardStore";
 
 const descriptionCards = [
     {
@@ -36,6 +43,36 @@ const descriptionCards = [
 
 function toGetStarted(){
     window.open("https://docs.qq.com/form/page/DR2lMVGtlT3NKc1F4")
+}
+
+const $fetcher = useDataFetcher()
+const $authStore = useAuthStore()
+const $dashboardStore = useDashboardStore()
+const $message = useMessage()
+const posts = ref<Post[]>([])
+const users = ref<User[]>([])
+const loadingPage = ref(false)
+onMounted(async () => {
+    loadingPage.value = true
+    posts.value = await $dashboardStore.fetchPosts($authStore.state, $message)
+    users.value = await $dashboardStore.fetchUsers($message)
+    loadingPage.value = false;
+})
+
+function findUserFromId(id: string): User | undefined {
+    for(let i = 0; i < users.value.length; i++)
+        if (users.value[i].id == id) return users.value[i];
+}
+
+function formatDateToMMMddYYYY(isoTimestamp: string): string {
+    // Create a new Date object from the timestamp
+    const date = new Date(isoTimestamp);
+
+    // Create an options object for formatting
+    const options: any = { year: 'numeric', month: 'short', day: 'numeric' };
+
+    // Use Intl.DateTimeFormat to format the date
+    return new Intl.DateTimeFormat('en-US', options).format(date);
 }
 </script>
 
@@ -64,7 +101,8 @@ function toGetStarted(){
                     </div>
 
                 </NLayoutContent>
-                <NLayout class="p-10 w-fit">
+                <NLayout class="px-10 py-4 w-fit">
+                    <NDivider class="text-4xl flex justify-center font-bold mb-6">Features 特性</NDivider>
                     <NGrid class="w-fit flex items-center justify-center" :x-gap="20" :y-gap="20" cols="3 100:1 600:2 1000:3">
                         <NGridItem v-for="desc in descriptionCards" class="flex h-full w-full">
                             <NCard size="large" class="w-full h-full flex" :title="desc.title" hoverable>
@@ -78,8 +116,33 @@ function toGetStarted(){
                         </NGridItem>
                     </NGrid>
                 </NLayout>
-                <NLayout class="p-10 w-fit">
-
+                <NLayout class="px-10 py-3 w-full">
+                    <NDivider class="text-4xl flex justify-center font-bold mb-6">Posts 帖子</NDivider>
+                    <NGrid class="w-full flex items-center justify-center" :y-gap="20" :x-gap="20" cols="2" v-if="!loadingPage">
+                        <NGridItem v-for="post in posts" class="flex h-full w-full cursor-pointer">
+                            <NCollapseTransition :show="loadingPage">
+                                <NCard hoverable class="h-fit">
+                                    <div class="flex gap-3">
+                                        <div class="flex-grow">
+                                            <div class="text-2xl font-bold">{{post.title}}</div>
+                                            <div class="text-zinc-500 flex items-center">
+                                                Created at {{formatDateToMMMddYYYY(post.created_at)}} by {{findUserFromId(post.author_id)?.username}} <div class="flex scale-10 ml-1"><NAvatar :src="findUserFromId(post.author_id)?.avatar_url" round size="small"/></div>
+                                            </div>
+                                        </div>
+                                        <RouterLink :to="'/post/' + post.slug">
+                                            <NButton type="tertiary" strong>Read More 阅读更多</NButton>
+                                        </RouterLink>
+                                    </div>
+                                </NCard>
+                            </NCollapseTransition>
+                        </NGridItem>
+                    </NGrid>
+                    <NCollapseTransition class="w-full items-center justify-center gap-3 grid-cols-2 grid" v-else :show="loadingPage">
+                        <NSkeleton height="80px" class="w-full"/>
+                        <NSkeleton height="80px" class="w-full"/>
+                        <NSkeleton height="80px" class="w-full"/>
+                        <NSkeleton height="80px" class="w-full"/>
+                    </NCollapseTransition>
                 </NLayout>
                 <Copyrighter/>
             </NLayout>

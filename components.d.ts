@@ -10,6 +10,7 @@ declare module 'vue' {
     Copyrighter: typeof import('./src/components/Copyrighter.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']
+    NCollapseTransition: typeof import('naive-ui')['NCollapseTransition']
     NGradientText: typeof import('naive-ui')['NGradientText']
     NInput: typeof import('naive-ui')['NInput']
     NLayout: typeof import('naive-ui')['NLayout']
