@@ -19,11 +19,12 @@ import RuleTwoComponent from "@/assets/docs/views/rules/Rule2.vue";
 import Copyrighter from "@/components/Copyrighter.vue";
 import {Home, Newspaper, HeartCircleOutline, AlertCircle, Apps} from "@vicons/ionicons5"
 import type {Component} from "vue";
-function renderIcon (icon: Component) {
-    return () => h(NIcon, null, { default: () => h(icon) })
+
+function renderIcon(icon: Component) {
+    return () => h(NIcon, null, {default: () => h(icon)})
 }
 
-const sidebarOptions : MenuOption[] = [
+const sidebarOptions: MenuOption[] = [
     {
         label: 'Server Rules 服务器规则',
         key: 'server-rules',
@@ -42,9 +43,9 @@ const containerRef = ref<HTMLElement | undefined>(undefined);
 <template>
     <div class="w-full">
         <NLayout class="w-full h-full flex">
-<!--            <NLayoutHeader class="w-full h-full">-->
-<!--                <img src="@/assets/images/bg5.png" alt="Header" class="object-cover w-full"/>-->
-<!--            </NLayoutHeader>-->
+            <!--            <NLayoutHeader class="w-full h-full">-->
+            <!--                <img src="@/assets/images/bg5.png" alt="Header" class="object-cover w-full"/>-->
+            <!--            </NLayoutHeader>-->
             <NLayout has-sider class="h-screen w-full pt-16">
                 <NLayoutSider bordered collapse-mode="width" sider-placement="left" show-trigger="bar">
                     <NMenu v-model:value="activeKey" :options="sidebarOptions" default-value="server-rules"/>
@@ -66,7 +67,8 @@ const containerRef = ref<HTMLElement | undefined>(undefined);
                 </NScrollbar>
                 <NLayoutSider sider-placement="right">
                     <div class="w-fit h-fit p-3">
-                        <NAnchor :show-rail="true" :show-background="true" class="w-fit" v-if="activeKey == 'server-rules'">
+                        <NAnchor :show-rail="true" :show-background="true" class="w-fit"
+                                 v-if="activeKey == 'server-rules'">
                             <NAnchorLink title="Rule 1 规则一" href="#r1">
                                 <NAnchorLink title="1.1" href="#r1.1"/>
                                 <NAnchorLink title="1.2" href="#r1.2"/>

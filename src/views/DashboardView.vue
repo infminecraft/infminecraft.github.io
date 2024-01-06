@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { supabase } from '@/scripts/client'
+import {supabase} from '@/scripts/client'
 import {type Component, h, onMounted, ref, toRefs, toRef} from 'vue'
 import {
     NCard,
@@ -16,7 +16,7 @@ import {
 } from "naive-ui";
 import axios from 'axios'
 import {RouterLink, useRouter, useRoute} from "vue-router";
-import {Home, PencilSharp, PersonCircle, NewspaperOutline, GitMerge, GitPullRequest } from "@vicons/ionicons5";
+import {Home, PencilSharp, PersonCircle, NewspaperOutline, GitMerge, GitPullRequest} from "@vicons/ionicons5";
 import {useSession} from "@/scripts/authentication/auth";
 import {useAuthStore} from "@/scripts/authentication/store";
 import ContentLoader from "@/views/components/ContentLoader.vue";
@@ -26,13 +26,14 @@ import PostsDashboardView from "@/views/dashboards/PostsDashboardView.vue";
 import Copyrighter from "@/components/Copyrighter.vue";
 import {useDataFetcher} from "@/scripts/utility/dashboard/fetch";
 import MainBoardView from "@/views/dashboards/MainBoardView.vue";
+
 const $authStore = useAuthStore();
 const $route = useRoute()
 
 const activeKey = ref('');
 
-function renderIcon (icon: Component) {
-    return () => h(NIcon, null, { default: () => h(icon) })
+function renderIcon(icon: Component) {
+    return () => h(NIcon, null, {default: () => h(icon)})
 }
 
 const sidebarMenu = [
@@ -68,10 +69,11 @@ const sidebarMenu = [
 ]
 
 const $router = useRouter()
+const sidebarCollapsed = ref(true)
 
 const handleUpdateValue = (key: string) => {
     activeKey.value = key;
-    if(key != 'dashboard') $router.push(`/dashboard/${key}`);
+    if (key != 'dashboard') $router.push(`/dashboard/${key}`);
     else $router.push('/dashboard')
 }
 </script>
@@ -85,19 +87,31 @@ const handleUpdateValue = (key: string) => {
                               collapse-mode="width"
                               :collapsed-width="64"
                               :width="240"
-                              :native-scrollbar="false">
-                    <NMenu :options="sidebarMenu"
-                           :collapsed-width="64"
-                           :collapsed-icon-size="20"
-                           v-model:value="activeKey"
-                           :on-update-value="handleUpdateValue"
-                    />
+                              :native-scrollbar="false"
+                              v-model:collapsed="sidebarCollapsed"
+                >
+                    <div class="flex flex-col py-2 gap-2">
+                        <div class="items-center justify-center text-center flex flex-row cursor-pointer" @click="$router.push('/')">
+                            <NCollapseTransition :show="!sidebarCollapsed" class="w-fit">
+                                <NGradientText class="font-bold text-2xl">InfMinecraft</NGradientText>
+                            </NCollapseTransition>
+                            <div class="object-contain">
+                                <img width="44" src="public/infmc-icon.png">
+                            </div>
+                        </div>
+                        <NMenu :options="sidebarMenu"
+                               :collapsed-width="64"
+                               :collapsed-icon-size="20"
+                               v-model:value="activeKey"
+                               :on-update-value="handleUpdateValue"
+                        />
+                    </div>
                 </NLayoutSider>
                 <NLayoutContent class="h-full w-full" :native-scrollbar="false">
                     <div class="p-10">
                         <RouterView v-slot="{ Component }">
                             <component :is="Component" :authStore="$authStore"/>
-<!--                            <component :is="PostsDashboardView" :posts="userPosts"/>-->
+                            <!--                            <component :is="PostsDashboardView" :posts="userPosts"/>-->
                         </RouterView>
                     </div>
                     <Copyrighter/>

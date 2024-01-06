@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { toRefs, ref } from "vue";
+import {toRefs, ref} from "vue";
 
 const props = defineProps({
     loading: Boolean
@@ -17,7 +17,7 @@ const props = defineProps({
             </NSpin>
         </div>
         <div v-else>
-            <slot />
+            <slot/>
         </div>
     </div>
 </template>

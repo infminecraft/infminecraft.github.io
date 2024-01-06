@@ -1,7 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHashHistory, createWebHistory} from 'vue-router'
 import LandingView from "@/views/LandingView.vue";
 import DocumentationView from "@/views/DocumentationView.vue";
-import PostsView from "@/views/PostsView.vue";
 import LoginView from "@/views/auth/LoginView.vue";
 import {supabase} from "@/scripts/client";
 import DashboardView from "@/views/DashboardView.vue";
@@ -16,7 +15,7 @@ import GitHubIssuesView from "@/views/dashboards/GitHubIssuesView.vue";
 import GitHubPullRequestsView from "@/views/dashboards/GitHubPullRequestsView.vue";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -32,11 +31,6 @@ const router = createRouter({
       path: '/donate',
       name: 'donate',
       component: LandingView
-    },
-    {
-      path: '/posts',
-      name: 'posts',
-      component: PostsView
     },
     {
       path: '/login',
@@ -95,6 +89,10 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       name: '404',
+      component: NotFound404
+    },
+    {
+      path: '/post/404',
       component: NotFound404
     }
   ]
