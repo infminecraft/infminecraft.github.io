@@ -10,13 +10,14 @@ import {
     NNotificationProvider, NText
 } from "naive-ui";
 import type {MenuOption} from "naive-ui";
-import {Home, Newspaper, HeartCircleOutline, AlertCircle, LogOutOutline} from "@vicons/ionicons5";
+import {Home, Newspaper, HeartCircleOutline, AlertCircle, LogOutOutline, GridOutline} from "@vicons/ionicons5";
 import {h, ref, onMounted} from "vue";
 import type {Component} from "vue";
 import ContentLoader from "@/views/components/ContentLoader.vue";
 import {supabase} from "@/scripts/client";
 import {useAuthStore} from "@/scripts/authentication/store";
 import {useDataFetcher} from "@/scripts/utility/dashboard/fetch";
+import {signOut} from "@/scripts/authentication/auth";
 
 function renderIcon(icon: Component) {
     return () => h(NIcon, null, {default: () => h(icon)})
@@ -28,10 +29,23 @@ const userDropdown = [
     {
         label: "Dashboard",
         key: 'dashboard',
-        icon: renderIcon(LogOutOutline),
+        icon: renderIcon(GridOutline),
         props: {
             onClick: () => {
                 $router.push('dashboard')
+            }
+        }
+    },
+    {
+        label: "Sign Out",
+        key: 'sign-out',
+        icon: renderIcon(LogOutOutline),
+        props: {
+            onClick: async () => {
+                signingOutUser.value = true;
+                await signOut();
+                signingOutUser.value = false;
+                window.location.reload();
             }
         }
     }
@@ -93,6 +107,7 @@ const headerMenuOptions: MenuOption[] = [
 ]
 const containerRef = ref<HTMLElement | undefined>(undefined);
 const activeKey = ref("landing");
+const signingOutUser = ref(false)
 
 const {state, checkSession, updateSession} = useAuthStore();
 const avatarRef = ref()
@@ -121,7 +136,7 @@ onMounted(async () => {
                         <NConfigProvider :theme="darkTheme">
                             <div class="w-full relative">
                                 <div class="w-full justify-center items-center">
-                                    <ContentLoader :loading="false">
+                                    <ContentLoader :loading="signingOutUser">
                                         <div>
                                             <NAffix :listen-to="() => containerRef" :trigger-top="0" :top="0"
                                                     class="w-full z-10"

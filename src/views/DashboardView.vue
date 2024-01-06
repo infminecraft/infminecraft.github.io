@@ -16,7 +16,7 @@ import {
 } from "naive-ui";
 import axios from 'axios'
 import {RouterLink, useRouter, useRoute} from "vue-router";
-import {Home, PencilSharp, PersonCircle, NewspaperOutline, GitMerge, GitPullRequest} from "@vicons/ionicons5";
+import {Home, PencilSharp, GridOutline, PersonCircle, NewspaperOutline, GitMerge, GitPullRequest} from "@vicons/ionicons5";
 import {useSession} from "@/scripts/authentication/auth";
 import {useAuthStore} from "@/scripts/authentication/store";
 import ContentLoader from "@/views/components/ContentLoader.vue";
@@ -40,7 +40,7 @@ const sidebarMenu = [
     {
         label: 'Dashboard 管理面板',
         key: 'dashboard',
-        icon: renderIcon(Home)
+        icon: renderIcon(GridOutline)
     },
     {
         key: 'divider-1',
@@ -76,6 +76,7 @@ const handleUpdateValue = (key: string) => {
     if (key != 'dashboard') $router.push(`/dashboard/${key}`);
     else $router.push('/dashboard')
 }
+
 </script>
 
 <template>
@@ -96,7 +97,7 @@ const handleUpdateValue = (key: string) => {
                                 <NGradientText class="font-bold text-2xl">InfMinecraft</NGradientText>
                             </NCollapseTransition>
                             <div class="object-contain">
-                                <img width="44" src="../../public/infmc-icon.png">
+                                <img width="44" src="/infmc-icon.png">
                             </div>
                         </div>
                         <NMenu :options="sidebarMenu"
