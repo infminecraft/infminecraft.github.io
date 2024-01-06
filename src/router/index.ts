@@ -16,7 +16,7 @@ import GitHubIssuesView from "@/views/dashboards/GitHubIssuesView.vue";
 import GitHubPullRequestsView from "@/views/dashboards/GitHubPullRequestsView.vue";
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
