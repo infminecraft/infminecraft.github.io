@@ -1,88 +1,61 @@
 <script setup lang="ts">
 import {ref, onMounted} from 'vue'
 import {
-    NButton,
+    type FormItemRule, NAvatar,
+    NButton, NCollapseTransition,
     NDivider,
     NForm,
     NFormItem,
     NFormItemRow,
-    NGradientText,
-    NInput,
+    NGradientText, NIcon,
+    NInput, NSpin,
     NTabPane,
     NTabs,
     useMessage
 } from "naive-ui";
-import {signOut, isValidEmail} from '@/scripts/authentication/auth'
+import {isValidEmail, useAuthClient} from '@/scripts/authentication/auth'
 import type {FormInst} from "naive-ui/lib";
 import {supabase} from "@/scripts/client";
 import {RouterLink, RouterView, useRouter} from "vue-router";
 import {useAuthStore} from "@/scripts/authentication/store";
-
-function checkUrlForSupabaseSession() {
-    // Get the hash from the current URL (the part after '#')
-    const hash = window.location.hash.substr(1);
-
-    // Convert the hash into an object of key-value pairs
-    const params = hash.split('&').reduce((accumulator: any, pair) => {
-        const [key, value] = pair.split('=');
-        accumulator[key] = value;
-        return accumulator;
-    }, {});
-
-    // Check if 'access_token' is present in the parsed hash object
-    if (params.access_token) {
-        // Pass the session details to Supabase
-        supabase.auth.setSession({access_token: params.access_token, refresh_token: params.refresh_token});
-
-        // Optionally, redirect the user to the dashboard or wherever you need
-        // Assuming you have a vue-router instance named '$router'
-        $router.push('/dashboard');
-    }
-}
-
-onMounted(() => {
-    window.location.hash = '';
-    checkUrlForSupabaseSession()
-})
+import {ArrowForward} from "@vicons/ionicons5"
 
 const $router = useRouter()
 const $authStore = useAuthStore()
+const $message = useMessage()
+const $auth = useAuthClient($message)
 
-const form = ref<FormInst | null>(null)
-const message = useMessage(), emailInput = ref(''), loading = ref(false), inAuth = ref(false)
+const isResettingPassword = ref(false)
 
-async function tryOtpLogin() {
-    loading.value = true
-    if (!isValidEmail(emailInput.value)) {
-        message.error("Please enter a valid email format.")
-        loading.value = false
+const loginFormRules = {
+    email: [
+        {required: true, message: 'Please enter your email', trigger: 'blur'},
+        {validator(rule: FormItemRule, value: string) {return (isValidEmail(value) ? true : new Error("Please enter a proper email format."))}, trigger: 'blur'}
+    ]
+}
+const loginFormModel = ref({email: ''})
+const loginFormRef = ref(null)
+
+const passwordInput = ref(''), awaitLogin = ref(false), inAuth = ref(false)
+
+async function tryLogin() {
+    awaitLogin.value = true
+    if (!isValidEmail(loginFormModel.value.email)) {
+        $message.error("Please enter a valid email format.")
+        awaitLogin.value = false
         return
     }
-    try {
-        const {error} = await supabase.auth.signInWithOtp({
-            email: emailInput.value
-        })
-        if (error) throw error
-        message.success("Check your email for the login link.")
-    } catch (error) {
-        if (error instanceof Error) message.error(error.message)
-        loading.value = false
-        return
-    }
-    loading.value = false
-    inAuth.value = true
+    let success = await $auth.signIn(loginFormModel.value.email, passwordInput.value)
+    if (success) await $router.push('dashboard');
+    awaitLogin.value = false
 }
 
-const userSession = ref($authStore.state.session);
-
-supabase.auth.onAuthStateChange((_event, session) => {
-    userSession.value = session;
-    if (session) {
-        // Perform additional logic or navigation when the user logs in
-        console.log('User logged in:', session);
-        $router.push('/dashboard');
-    }
-});
+const awaitSendingEmail = ref(false), emailInput = ref('')
+async function trySendResetEmail(){
+    awaitSendingEmail.value = true
+    isResettingPassword.value = await $auth.sendResetPasswordEmail(emailInput.value)
+    awaitSendingEmail.value = false
+}
 </script>
 
 <template>
@@ -92,21 +65,50 @@ supabase.auth.onAuthStateChange((_event, session) => {
                 type="success" class="w-full text-center text-5xl mb-10">
                 InfMinecraft Dashboard
             </NGradientText>
-            <NCard>
-                <NTabs default-value="signin" size="large" justify-content="space-evenly" class="px-2 pb-4"
-                       v-if="!inAuth">
-                    <NTabPane name="signin" tab="Sign In" class="flex-col flex gap-4">
+            <NCard v-if="!isResettingPassword">
+                <NCollapseTransition :show="!awaitLogin">
+                    <NTabs default-value="signin" size="large" justify-content="space-evenly" class="px-2 pb-4">
+                        <NTabPane name="signin" tab="Sign In" class="flex-col flex gap-4">
+                            <NForm :on-submit="tryLogin" :rules="loginFormRules" :model="loginFormModel" ref="loginFormRef">
+                                <NFormItem path="title" label="Email">
+                                    <NInput v-model:value="loginFormModel.email" placeholder="Email"/>
+                                </NFormItem>
+                                <NFormItem path="password" label="Password">
+                                    <NInput v-model:value="passwordInput" placeholder="Password" type="password"/>
+                                </NFormItem>
+                            </NForm>
+                            <NButton :loading="awaitLogin" type="primary" block secondary strong @click="tryLogin">
+                                Sign In
+                            </NButton>
+                            <NButton class="flex-row flex gap-2" text @click="isResettingPassword = true"><div class="mr-1">Forgot your password?</div><NIcon><ArrowForward/></NIcon></NButton>
+                        </NTabPane>
+                        <NTabPane name="signup" tab="Sign Up" class="flex-col flex gap-4">
+                            <div>This feature is still unfinished. Come back later.</div>
+                        </NTabPane>
+                    </NTabs>
+                </NCollapseTransition>
+                <NCollapseTransition :show="awaitLogin" class="flex justify-center">
+                    <NSpin class="justify-center items-center">
+                        <template #description>
+                            Please wait over a cup of hot coffee...
+                        </template>
+                    </NSpin>
+                </NCollapseTransition>
+            </NCard>
+            <NCard v-else class="flex flex-col">
+                <div class="font-bold text-lg text-center mb-4">Enter your email to reset your password.</div>
+                <NSpin :show="awaitSendingEmail" class="flex flex-col">
+                    <NInputGroup>
                         <NInput v-model:value="emailInput" placeholder="Email"/>
-                        <NButton :loading="loading" type="primary" block secondary strong @click="tryOtpLogin">
-                            Sign In
+                        <NButton @click="trySendResetEmail()" strong type="primary">Validate</NButton>
+                    </NInputGroup>
+                    <div class="flex-row flex mt-3">
+                        <NButton class="gap-2 justify-center flex-grow" text @click="isResettingPassword = false">
+                            <div class="mr-1 justify-center text-center">Remembered your password?</div>
+                            <NIcon><ArrowForward/></NIcon>
                         </NButton>
-                    </NTabPane>
-                </NTabs>
-                <div v-else>
-                    <NGradientText :font-size="16">We've sent you an email. You should be able to log in with this
-                        link.
-                    </NGradientText>
-                </div>
+                    </div>
+                </NSpin>
             </NCard>
             <NButton @click="$router.push('/')" class="justify-self-center w-full mt-5" text>Back to Menu</NButton>
         </div>
