@@ -18,6 +18,33 @@ import {supabase} from "@/scripts/client";
 import {RouterLink, RouterView, useRouter} from "vue-router";
 import {useAuthStore} from "@/scripts/authentication/store";
 
+function checkUrlForSupabaseSession() {
+    // Get the hash from the current URL (the part after '#')
+    const hash = window.location.hash.substr(1);
+
+    // Convert the hash into an object of key-value pairs
+    const params = hash.split('&').reduce((accumulator: any, pair) => {
+        const [key, value] = pair.split('=');
+        accumulator[key] = value;
+        return accumulator;
+    }, {});
+
+    // Check if 'access_token' is present in the parsed hash object
+    if (params.access_token) {
+        // Pass the session details to Supabase
+        supabase.auth.setSession({access_token: params.access_token, refresh_token: params.refresh_token});
+
+        // Optionally, redirect the user to the dashboard or wherever you need
+        // Assuming you have a vue-router instance named '$router'
+        $router.push('/dashboard');
+    }
+}
+
+onMounted(() => {
+    window.location.hash = '';
+    checkUrlForSupabaseSession()
+})
+
 const $router = useRouter()
 const $authStore = useAuthStore()
 
