@@ -91,8 +91,8 @@ const handleUpdateValue = (key: string) => {
                               :native-scrollbar="false"
                               v-model:collapsed="sidebarCollapsed"
                 >
-                    <div class="flex flex-col py-2 gap-2">
-                        <div class="items-center justify-center text-center flex flex-row cursor-pointer" @click="$router.push('/')">
+                    <div class="flex flex-col py-2 gap-1">
+                        <div class="items-center justify-center text-center flex flex-row cursor-pointer mt-1" @click="$router.push('/')">
                             <NCollapseTransition :show="!sidebarCollapsed" class="w-fit">
                                 <NGradientText class="font-bold text-2xl">InfMinecraft</NGradientText>
                             </NCollapseTransition>
