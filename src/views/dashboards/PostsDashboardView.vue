@@ -287,7 +287,7 @@ const tryEditPost = async () => {
                             <NInput v-model:value="createPostFormModel.slug" :disabled="newPostAutoSlug"/>
                         </NFormItem>
                         <NFormItem path="content" label="Content" class="mt-1">
-                            <MdEditor v-model="newPostText"/>
+                            <MdEditor v-model="newPostText" theme="dark"/>
                         </NFormItem>
                     </NForm>
                     <div class="flex gap-2 w-full justify-end">
@@ -318,7 +318,7 @@ const tryEditPost = async () => {
                             <NInput v-model:value="editPostFormModel.slug"/>
                         </NFormItem>
                         <NFormItem path="content" label="Content" class="mt-1">
-                            <MdEditor v-model="editPostContent"/>
+                            <MdEditor v-model="editPostContent" theme="dark"/>
                         </NFormItem>
                     </NForm>
                     <div class="flex gap-2 w-full justify-end">
