@@ -13,9 +13,10 @@ import PostPageView from "@/views/PostPageView.vue";
 import UserManagementView from "@/views/dashboards/UserManagementView.vue";
 import GitHubIssuesView from "@/views/dashboards/GitHubIssuesView.vue";
 import GitHubPullRequestsView from "@/views/dashboards/GitHubPullRequestsView.vue";
+import ResetPassword from "@/views/auth/ResetPassword.vue";
 
 const router = createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
@@ -36,14 +37,29 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
-      beforeEnter: (to, from, next) => {
-        const { state } = useAuthStore();
-        if (state.session) {
+      beforeEnter: async (to, from, next) => {
+        const $authStore = useAuthStore();
+        await $authStore.checkSession()
+        if ($authStore.state.session) {
           next({ name: 'dashboard' }); // Redirect to dashboard if already logged in
         } else {
           next(); // Allow route if not logged in
         }
       },
+    },
+    {
+      path: '/reset-password',
+      name: 'reset-password',
+      component: ResetPassword,
+      beforeEnter: async (to, from, next) => {
+        const $authStore = useAuthStore();
+        await $authStore.checkSession()
+        if ($authStore.state.session) {
+          next();
+        } else {
+          next({name: '404'});
+        }
+      }
     },
     {
       path: '/dashboard',
@@ -98,16 +114,16 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach(async (to, from, next) => {
-  const { state } = useAuthStore();
-
-  // Assuming 'dashboard' route requires authentication
-  if (to.name === 'dashboard' && !state.session) {
-    // Redirect user to login page
-    return next({ name: 'login' });
-  }
-
-  next(); // proceed to route
-});
+// router.beforeEach(async (to, from, next) => {
+//   const { state } = useAuthStore();
+//
+//   // Assuming 'dashboard' route requires authentication
+//   if (to.name === 'dashboard' && !state.session) {
+//     // Redirect user to login page
+//     return next({ name: 'login' });
+//   }
+//
+//   next(); // proceed to route
+// });
 
 export default router

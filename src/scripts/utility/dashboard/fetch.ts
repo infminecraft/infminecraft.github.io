@@ -131,9 +131,9 @@ export const useDataFetcher = () => {
                 message.error("An error occurred while fetching posts. Please refresh the page and try again.");
             }
             console.log("Error Fetch User Posts")
-            return [];
         }
         console.log("Finished Fetch User Posts")
+        return [];
     }
 
     /**

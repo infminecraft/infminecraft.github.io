@@ -140,7 +140,7 @@ onMounted(async () => {
                                         <div>
                                             <NAffix :listen-to="() => containerRef" :trigger-top="0" :top="0"
                                                     class="w-full z-10"
-                                                    v-if="$route.name != 'login' && !$route.path.startsWith('/dashboard') && !$route.path.startsWith('/post') && $route.name != '404'">
+                                                    v-if="$route.name != 'login' && !$route.path.startsWith('/dashboard') && !$route.path.startsWith('/post') && !$route.path.startsWith('/reset-password') && $route.name != '404'">
                                                 <div class="flex items-center justify-center">
                                                     <div
                                                         class="rounded-2xl p-1 px-2 mt-3 backdrop-blur-md bg-transparent border-0 ring-[0.5px] ring-slate-300 flex">
