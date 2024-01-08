@@ -50,10 +50,10 @@ async function tryLogin() {
     awaitLogin.value = false
 }
 
-const awaitSendingEmail = ref(false), emailInput = ref('')
+const awaitSendingEmail = ref(false), emailInput = ref(''), emailSent = ref(false)
 async function trySendResetEmail(){
     awaitSendingEmail.value = true
-    isResettingPassword.value = await $auth.sendResetPasswordEmail(emailInput.value)
+    emailSent.value = await $auth.sendResetPasswordEmail(emailInput.value)
     awaitSendingEmail.value = false
 }
 </script>
@@ -96,7 +96,7 @@ async function trySendResetEmail(){
                 </NCollapseTransition>
             </NCard>
             <NCard v-else class="flex flex-col">
-                <NSpin :show="awaitSendingEmail" class="flex flex-col">
+                <NSpin :show="awaitSendingEmail" class="flex flex-col" v-if="emailSent">
                     <div class="font-bold text-lg text-center mb-4">Enter your email to reset your password.</div>
                     <NInputGroup>
                         <NInput v-model:value="emailInput" placeholder="Email"/>
@@ -109,6 +109,9 @@ async function trySendResetEmail(){
                         </NButton>
                     </div>
                 </NSpin>
+                <div class="flex flex-col" v-else>
+                    <div class="text-lg text-center mb-4 justify-center">Your reset email is sent. Please check your inbox.</div>
+                </div>
             </NCard>
             <NButton @click="$router.push('/')" class="justify-self-center w-full mt-5" text>Back to Menu</NButton>
         </div>
