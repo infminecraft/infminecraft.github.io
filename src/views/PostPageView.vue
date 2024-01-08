@@ -2,19 +2,34 @@
 import {ref, onBeforeMount} from 'vue';
 import {useRoute, useRouter} from "vue-router";
 import {supabase} from "@/scripts/client";
-import {NAvatar, NButton, NDivider, NIcon, NLayout, NLayoutFooter, NLayoutHeader, NSkeleton} from "naive-ui";
-// @ts-ignore
-import VueMarkdown from "vue-markdown-render/src/VueMarkdown";
+import {
+    NAvatar,
+    NBackTop,
+    NButton,
+    NDivider,
+    NDrawer, NDrawerContent,
+    NIcon,
+    NLayout,
+    NLayoutFooter,
+    NLayoutHeader,
+    NSkeleton
+} from "naive-ui";
+import {MdPreview, MdCatalog, MdEditor} from 'md-editor-v3';
+import 'md-editor-v3/lib/preview.css';
 import {ArrowBack} from "@vicons/ionicons5"
 import {useDataFetcher} from "@/scripts/utility/dashboard/fetch";
 import Copyrighter from "@/components/Copyrighter.vue";
 import type {Post} from "@/scripts/types";
 
+const scrollElement = document.documentElement // for Markdown Catalog Renderer
 const $router = useRouter()
 const $route = useRoute()
 const $fetcher = useDataFetcher()
+
 const post = ref<Post>();
 const author = ref()
+const showAnchorDrawer = ref(false)
+
 onBeforeMount(async () => {
     if (!$route.params.slug) {
         $router.push('/'); // Redirect to home page if no slug is present in URL
@@ -56,12 +71,16 @@ function formatDateToMMMddYYYY(isoTimestamp: string): string {
 <template>
     <NLayout class="w-full min-h-screen">
         <NLayoutHeader>
-            <div class="flex p-5">
+            <div class="flex flex-row p-5">
                 <NButton text @click="$router.push('/')">
                     <NIcon class="mr-2">
                         <ArrowBack/>
                     </NIcon>
                     Back to Menu
+                </NButton>
+                <div class="flex-grow"/>
+                <NButton text @click="showAnchorDrawer = true">
+                    Tables of Content
                 </NButton>
             </div>
         </NLayoutHeader>
@@ -76,7 +95,7 @@ function formatDateToMMMddYYYY(isoTimestamp: string): string {
                 </div>
                 <div class="items-center text-zinc-500 font-bold">{{ formatDateToMMMddYYYY(post.created_at) }}</div>
                 <NDivider/>
-                <vue-markdown :source="post.content"/>
+                <MdPreview :editorId="'preview-only'" :modelValue="post.content" theme="dark" class="-mt-10" />
             </div>
             <div v-else>
                 <NSkeleton height="50px"/>
@@ -85,13 +104,21 @@ function formatDateToMMMddYYYY(isoTimestamp: string): string {
                 <NDivider/>
                 <NSkeleton height="100px"/>
             </div>
+            <NDrawer v-model:show="showAnchorDrawer">
+                <NDrawerContent closable title="Tables of Content">
+                    <MdCatalog :editorId="'preview-only'" :scrollElement="scrollElement" />
+                </NDrawerContent>
+            </NDrawer>
         </NLayoutContent>
         <NLayoutFooter>
             <Copyrighter/>
         </NLayoutFooter>
     </NLayout>
+    <NBackTop/>
 </template>
 
 <style scoped>
-
+.md-editor-dark {
+    --md-bk-color: rgba(51, 51, 51, 0) !important;
+}
 </style>

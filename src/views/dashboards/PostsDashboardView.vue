@@ -48,6 +48,22 @@ onMounted(async () => {
 })
 
 // Functions
+function addPostsData() {
+    data.length = 0
+    for (let i = 0; i < postsList.value.length; i++) {
+        data.push({
+            id: postsList.value[i].postId,  // <-- Add this line
+            title: postsList.value[i].title,
+            created_at: formatDateToMMMddYYYY(postsList.value[i].created_at),
+            updated_at: formatDateToMMMddYYYY(postsList.value[i].updated_at),
+            author_id: postsList.value[i].author_id,
+            slug: postsList.value[i].slug,
+            content: postsList.value[i].content,
+            postId: postsList.value[i].postId
+        })
+    }
+}
+
 async function reloadPage() {
     loadingPage.value = true
 
@@ -59,6 +75,13 @@ async function reloadPage() {
     addPostsData()
 
     loadingPage.value = false
+}
+
+async function refreshData(){
+    data.length = 0
+    posts.value = await dashboardStore.fetchPosts(props.authStore?.state, message, true)
+    setPosts(posts.value)
+    addPostsData()
 }
 
 type PostRowData = {
@@ -92,22 +115,6 @@ function setPosts(postList: Post[]) {
     postsList.value.length = 0
     for (const post of postList) {
         postsList.value.push(createPost(post));
-    }
-}
-
-function addPostsData() {
-    data.length = 0
-    for (let i = 0; i < postsList.value.length; i++) {
-        data.push({
-            id: postsList.value[i].postId,  // <-- Add this line
-            title: postsList.value[i].title,
-            created_at: formatDateToMMMddYYYY(postsList.value[i].created_at),
-            updated_at: formatDateToMMMddYYYY(postsList.value[i].updated_at),
-            author_id: postsList.value[i].author_id,
-            slug: postsList.value[i].slug,
-            content: postsList.value[i].content,
-            postId: postsList.value[i].postId
-        })
     }
 }
 
@@ -191,6 +198,7 @@ const onPositiveClick = async () => {
     console.log(ids)
 
     await $fetcher.deletePosts(ids, userData.id, message)
+    await refreshData();
     showConfirmDeleteModal.value = false;
     deletingPosts.value = false
 }
@@ -223,6 +231,7 @@ const onTypeTitle = (title: string) => {
 const tryPublishPost = async () => {
     awaitPublishingPost.value = true
     await $fetcher.publishPost(createPostFormModel.value.title, newPostText.value, userData.id, createPostFormModel.value.slug ? createSlug(createPostFormModel.value.title) : createPostFormModel.value.slug, message)
+    await refreshData();
     awaitPublishingPost.value = false
     showCreatePostModel.value = false
 }
@@ -249,6 +258,7 @@ const editPostFormModel = ref({title: editPostTitle.value, slug: editPostSlug}),
 const tryEditPost = async () => {
     awaitEditingPost.value = true
     await $fetcher.editUserPost(editPostAuthorId.value, editPostId.value, editPostFormModel.value.title, editPostContent.value, editPostFormModel.value.slug, message)
+    await refreshData();
     awaitEditingPost.value = false
     showEditPostModal.value = false
 }
@@ -277,7 +287,7 @@ const tryEditPost = async () => {
                             <NInput v-model:value="createPostFormModel.slug" :disabled="newPostAutoSlug"/>
                         </NFormItem>
                         <NFormItem path="content" label="Content" class="mt-1">
-                            <MdEditor v-model="newPostText"/>
+                            <MdEditor v-model="newPostText" theme="dark"/>
                         </NFormItem>
                     </NForm>
                     <div class="flex gap-2 w-full justify-end">
@@ -298,7 +308,7 @@ const tryEditPost = async () => {
         >
             <NCard class="w-full flex m-3 p-2">
                 <div>
-                    <div class="text-zinc-50 text-3xl font-bold mb-4">Create New Post</div>
+                    <div class="text-zinc-50 text-3xl font-bold mb-4">Edit New Post</div>
                     <NForm ref="formRef" :model="editPostFormModel" :rules="editPostFormRules"
                            :disabled="awaitEditingPost">
                         <NFormItem path="title" label="Title">
@@ -308,15 +318,15 @@ const tryEditPost = async () => {
                             <NInput v-model:value="editPostFormModel.slug"/>
                         </NFormItem>
                         <NFormItem path="content" label="Content" class="mt-1">
-                            <MdEditor v-model="editPostContent"/>
+                            <MdEditor v-model="editPostContent" theme="dark"/>
                         </NFormItem>
                     </NForm>
                     <div class="flex gap-2 w-full justify-end">
                         <NButton strong secondary type="default" @click="showEditPostModal=false" size="large"
-                                 :disabled="awaitEditingPost">Cancel
+                                 :disabled="awaitEditingPost">Discard
                         </NButton>
                         <NButton strong primary type="primary" size="large" :loading="awaitEditingPost"
-                                 @click="tryEditPost()" :disabled="awaitEditingPost">Publish
+                                 @click="tryEditPost()" :disabled="awaitEditingPost">Save
                         </NButton>
                     </div>
                 </div>

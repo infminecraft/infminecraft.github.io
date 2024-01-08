@@ -2,9 +2,11 @@
 import {type FormItemRule, NCard, useMessage} from "naive-ui";
 import {ref} from "vue";
 import {useAuthClient} from "@/scripts/authentication/auth";
+import {useRouter} from "vue-router";
 
 const $message = useMessage();
 const $auth = useAuthClient($message)
+const $router = useRouter();
 const isResettingPassword = ref(false)
 
 
@@ -15,7 +17,7 @@ const validatePassword = (password: string): boolean => {
     return regex.test(password);
 };
 
-const passwordInput = ref(null)
+const passwordInput = ref('')
 const resetFormRules = {
     password: [
         {required: true, message: 'Your password cannot be null', trigger: 'blur'},
@@ -28,6 +30,7 @@ const resetFormRef = ref(null)
 async function tryResetPassword(){
     awaitResettingPassword.value = true
     await $auth.updateUserPassword(resetFormModel.value.password)
+    $router.push('login')
     awaitResettingPassword.value = false
 }
 </script>
@@ -37,6 +40,7 @@ async function tryResetPassword(){
         <div class="justify-center w-1/3 h-fit">
             <NCard>
                 <NSpin :show="awaitResettingPassword">
+                    <div class="mb-2 text-white font-bold text-lg">Enter a new password.</div>
                     <NForm :rules="resetFormRules" :model="resetFormModel" ref="resetFormRef" :disabled="awaitResettingPassword">
                         <NFormItem path="password" label="Password">
                             <NInputGroup>
