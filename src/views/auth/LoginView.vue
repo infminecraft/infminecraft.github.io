@@ -96,7 +96,7 @@ async function trySendResetEmail(){
                 </NCollapseTransition>
             </NCard>
             <NCard v-else class="flex flex-col">
-                <NSpin :show="awaitSendingEmail" class="flex flex-col" v-if="emailSent">
+                <NSpin :show="awaitSendingEmail" class="flex flex-col" v-if="!emailSent">
                     <div class="font-bold text-lg text-center mb-4">Enter your email to reset your password.</div>
                     <NInputGroup>
                         <NInput v-model:value="emailInput" placeholder="Email"/>
